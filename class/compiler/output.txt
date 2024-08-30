@@ -1,22 +1,45 @@
 Keyword: int
 Identifier: x
-Symbol: ;
-Identifier: x
 Operator: =
-Number: 5
+Error: Identifier cannot start with a digit
 Symbol: ;
-Keyword: return
-Identifier: x
+Keyword: int
+Identifier: y
+Operator: =
+Error: Identifier cannot start with a digit
+Symbol: ;
+Error: Identifier cannot start with a digit
+Operator: =
+Error: Identifier cannot start with a digit
+Symbol: ;
+Keyword: boolean
+Identifier: isValid
+Operator: =
+Keyword: true
+Symbol: ;
+Identifier: float
+Identifier: z
+Operator: =
+Number: 3.14
+Symbol: ;
 Keyword: if
 Symbol: (
 Identifier: x
 Operator: >
-Number: 5
+Identifier: y
+Symbol: )
 Symbol: {
-Identifier: x
+Error: Missing semicolon at the end of the line.Identifier: z
 Operator: =
 Identifier: x
 Operator: +
-Number: 1
+Identifier: y
 Symbol: ;
 Symbol: }
+Error: Missing semicolon at the end of the line.Error: Identifier cannot start with a digit
+Operator: =
+Error: Identifier cannot start with a digit
+Symbol: ;
+Keyword: return
+Identifier: z
+Symbol: ;

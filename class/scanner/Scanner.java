@@ -66,11 +66,11 @@ public class Scanner {
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
     "\11\0\1\1\1\2\2\3\1\2\22\0\1\1\1\4"+
     "\4\0\1\5\1\0\1\6\1\7\1\10\1\11\1\12"+
-    "\1\13\1\0\1\14\12\15\1\0\1\16\1\17\1\20"+
-    "\1\21\2\0\32\22\6\0\1\23\1\24\2\22\1\25"+
-    "\1\26\1\22\1\27\1\30\2\22\1\31\1\22\1\32"+
-    "\1\33\2\22\1\34\1\35\1\36\1\37\1\22\1\40"+
-    "\3\22\1\41\1\42\1\43\7\0\1\3\u01a2\0\2\3"+
+    "\1\13\1\14\1\15\12\16\1\0\1\17\1\20\1\21"+
+    "\1\22\2\0\32\23\6\0\1\24\1\25\2\23\1\26"+
+    "\1\27\1\23\1\30\1\31\2\23\1\32\1\23\1\33"+
+    "\1\34\2\23\1\35\1\36\1\37\1\40\1\23\1\41"+
+    "\3\23\1\42\1\43\1\44\7\0\1\3\u01a2\0\2\3"+
     "\326\0\u0100\3";
 
   private static int [] zzUnpackcmap_blocks() {
@@ -101,12 +101,13 @@ public class Scanner {
     "\1\0\1\1\1\2\1\3\1\1\1\4\1\5\1\6"+
     "\1\7\1\10\1\11\1\12\1\13\1\14\1\15\1\16"+
     "\1\17\10\20\1\21\1\1\1\22\1\23\1\24\2\0"+
-    "\1\25\1\26\1\27\1\30\3\20\1\31\4\20\1\32"+
-    "\2\0\3\20\1\33\3\20\1\34\1\20\1\35\2\20"+
-    "\1\36\2\20\1\37\1\20\1\40\1\20\1\41\1\42";
+    "\1\25\1\0\2\26\1\27\1\30\1\31\3\20\1\32"+
+    "\4\20\1\33\2\0\1\13\3\20\1\34\3\20\1\35"+
+    "\1\20\1\36\2\20\1\37\2\20\1\40\1\20\1\41"+
+    "\1\20\1\42\1\43";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[68];
+    int [] result = new int[72];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -131,18 +132,18 @@ public class Scanner {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\44\0\110\0\154\0\220\0\44\0\44\0\44"+
-    "\0\44\0\44\0\44\0\264\0\330\0\44\0\374\0\u0120"+
-    "\0\u0144\0\u0168\0\u018c\0\u01b0\0\u01d4\0\u01f8\0\u021c\0\u0240"+
-    "\0\u0264\0\44\0\u0288\0\44\0\44\0\44\0\u02ac\0\u02d0"+
-    "\0\u02f4\0\44\0\44\0\44\0\u0318\0\u033c\0\u0360\0\u0168"+
-    "\0\u0384\0\u03a8\0\u03cc\0\u03f0\0\44\0\u0414\0\u0438\0\u045c"+
-    "\0\u0480\0\u04a4\0\u0168\0\u04c8\0\u04ec\0\u0510\0\44\0\u0534"+
-    "\0\u0168\0\u0558\0\u057c\0\u0168\0\u05a0\0\u05c4\0\u0168\0\u05e8"+
-    "\0\u0168\0\u060c\0\u0168\0\u0168";
+    "\0\0\0\45\0\112\0\157\0\224\0\45\0\45\0\45"+
+    "\0\45\0\45\0\45\0\271\0\336\0\45\0\u0103\0\u0128"+
+    "\0\u014d\0\u0172\0\u0197\0\u01bc\0\u01e1\0\u0206\0\u022b\0\u0250"+
+    "\0\u0275\0\45\0\u029a\0\45\0\45\0\45\0\u02bf\0\u02e4"+
+    "\0\u0309\0\u032e\0\336\0\u0353\0\45\0\45\0\45\0\u0378"+
+    "\0\u039d\0\u03c2\0\u0172\0\u03e7\0\u040c\0\u0431\0\u0456\0\45"+
+    "\0\u047b\0\u04a0\0\u032e\0\u04c5\0\u04ea\0\u050f\0\u0172\0\u0534"+
+    "\0\u0559\0\u057e\0\45\0\u05a3\0\u0172\0\u05c8\0\u05ed\0\u0172"+
+    "\0\u0612\0\u0637\0\u0172\0\u065c\0\u0172\0\u0681\0\u0172\0\u0172";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[68];
+    int [] result = new int[72];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -166,39 +167,40 @@ public class Scanner {
 
   private static final String ZZ_TRANS_PACKED_0 =
     "\1\2\2\3\1\0\1\4\1\5\1\6\1\7\1\10"+
-    "\1\11\1\12\1\13\1\14\1\15\1\16\1\17\1\20"+
-    "\1\21\2\22\1\23\1\24\1\25\1\22\1\26\3\22"+
-    "\1\27\1\22\1\30\1\22\1\31\1\32\1\33\1\34"+
-    "\45\0\2\3\61\0\1\35\30\0\1\36\36\0\11\37"+
-    "\1\40\2\37\1\41\27\37\15\0\1\15\46\0\1\42"+
-    "\43\0\1\43\43\0\1\44\40\0\1\22\4\0\17\22"+
-    "\20\0\1\22\4\0\11\22\1\45\5\22\20\0\1\22"+
-    "\4\0\7\22\1\46\7\22\20\0\1\22\4\0\1\22"+
-    "\1\47\15\22\20\0\1\22\4\0\4\22\1\50\3\22"+
-    "\1\51\6\22\20\0\1\22\4\0\3\22\1\52\13\22"+
-    "\20\0\1\22\4\0\12\22\1\53\4\22\20\0\1\22"+
-    "\4\0\5\22\1\54\11\22\45\0\1\55\12\0\1\56"+
-    "\32\0\11\37\1\57\2\37\1\0\27\37\2\41\1\0"+
-    "\3\41\2\0\32\41\1\0\1\41\15\0\1\22\4\0"+
-    "\11\22\1\60\5\22\20\0\1\22\4\0\13\22\1\61"+
-    "\3\22\20\0\1\22\4\0\7\22\1\62\7\22\20\0"+
-    "\1\22\4\0\14\22\1\63\2\22\20\0\1\22\4\0"+
-    "\14\22\1\64\2\22\20\0\1\22\4\0\15\22\1\65"+
-    "\1\22\20\0\1\22\4\0\6\22\1\66\10\22\17\0"+
-    "\1\67\40\0\1\56\2\0\1\67\44\0\1\22\4\0"+
-    "\7\22\1\70\7\22\20\0\1\22\4\0\3\22\1\71"+
-    "\13\22\20\0\1\22\4\0\13\22\1\72\3\22\20\0"+
-    "\1\22\4\0\15\22\1\73\1\22\20\0\1\22\4\0"+
-    "\3\22\1\74\13\22\20\0\1\22\4\0\7\22\1\75"+
-    "\7\22\20\0\1\22\4\0\3\22\1\76\13\22\20\0"+
-    "\1\22\4\0\3\22\1\77\13\22\20\0\1\22\4\0"+
-    "\12\22\1\100\4\22\20\0\1\22\4\0\3\22\1\101"+
-    "\13\22\20\0\1\22\4\0\1\22\1\102\15\22\20\0"+
-    "\1\22\4\0\10\22\1\103\6\22\20\0\1\22\4\0"+
-    "\10\22\1\104\6\22\3\0";
+    "\1\11\1\12\1\13\1\2\1\14\1\15\1\16\1\17"+
+    "\1\20\1\21\2\22\1\23\1\24\1\25\1\22\1\26"+
+    "\3\22\1\27\1\22\1\30\1\22\1\31\1\32\1\33"+
+    "\1\34\46\0\2\3\63\0\1\35\30\0\1\36\37\0"+
+    "\11\37\1\40\3\37\1\41\27\37\14\0\1\42\1\0"+
+    "\1\43\4\0\17\44\24\0\1\45\44\0\1\46\44\0"+
+    "\1\47\41\0\1\22\4\0\17\22\21\0\1\22\4\0"+
+    "\11\22\1\50\5\22\21\0\1\22\4\0\7\22\1\51"+
+    "\7\22\21\0\1\22\4\0\1\22\1\52\15\22\21\0"+
+    "\1\22\4\0\4\22\1\53\3\22\1\54\6\22\21\0"+
+    "\1\22\4\0\3\22\1\55\13\22\21\0\1\22\4\0"+
+    "\12\22\1\56\4\22\21\0\1\22\4\0\5\22\1\57"+
+    "\11\22\46\0\1\60\12\0\1\61\33\0\11\37\1\62"+
+    "\3\37\1\0\27\37\2\41\1\0\3\41\2\0\33\41"+
+    "\1\0\1\41\16\0\1\63\44\0\1\44\4\0\17\44"+
+    "\21\0\1\22\4\0\11\22\1\64\5\22\21\0\1\22"+
+    "\4\0\13\22\1\65\3\22\21\0\1\22\4\0\7\22"+
+    "\1\66\7\22\21\0\1\22\4\0\14\22\1\67\2\22"+
+    "\21\0\1\22\4\0\14\22\1\70\2\22\21\0\1\22"+
+    "\4\0\15\22\1\71\1\22\21\0\1\22\4\0\6\22"+
+    "\1\72\10\22\20\0\1\73\40\0\1\61\3\0\1\73"+
+    "\45\0\1\22\4\0\7\22\1\74\7\22\21\0\1\22"+
+    "\4\0\3\22\1\75\13\22\21\0\1\22\4\0\13\22"+
+    "\1\76\3\22\21\0\1\22\4\0\15\22\1\77\1\22"+
+    "\21\0\1\22\4\0\3\22\1\100\13\22\21\0\1\22"+
+    "\4\0\7\22\1\101\7\22\21\0\1\22\4\0\3\22"+
+    "\1\102\13\22\21\0\1\22\4\0\3\22\1\103\13\22"+
+    "\21\0\1\22\4\0\12\22\1\104\4\22\21\0\1\22"+
+    "\4\0\3\22\1\105\13\22\21\0\1\22\4\0\1\22"+
+    "\1\106\15\22\21\0\1\22\4\0\10\22\1\107\6\22"+
+    "\21\0\1\22\4\0\10\22\1\110\6\22\3\0";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[1584];
+    int [] result = new int[1702];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -242,11 +244,11 @@ public class Scanner {
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
     "\1\0\1\11\3\1\6\11\2\1\1\11\13\1\1\11"+
-    "\1\1\3\11\2\0\1\1\3\11\10\1\1\11\2\0"+
-    "\7\1\1\11\15\1";
+    "\1\1\3\11\2\0\1\1\1\0\2\1\3\11\10\1"+
+    "\1\11\2\0\10\1\1\11\15\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[68];
+    int [] result = new int[72];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -683,172 +685,177 @@ public class Scanner {
             { return "Carácter desconocido: " + yytext();
             }
           // fall through
-          case 35: break;
+          case 36: break;
           case 2:
             { /* ignorar */
             }
           // fall through
-          case 36: break;
+          case 37: break;
           case 3:
             { return "Operator: !";
             }
           // fall through
-          case 37: break;
+          case 38: break;
           case 4:
             { return "Symbol: (";
             }
           // fall through
-          case 38: break;
+          case 39: break;
           case 5:
             { return "Symbol: )";
             }
           // fall through
-          case 39: break;
+          case 40: break;
           case 6:
             { return "Operator: *";
             }
           // fall through
-          case 40: break;
+          case 41: break;
           case 7:
             { return "Operator: +";
             }
           // fall through
-          case 41: break;
+          case 42: break;
           case 8:
             { return "Symbol: ,";
             }
           // fall through
-          case 42: break;
+          case 43: break;
           case 9:
             { return "Operator: -";
             }
           // fall through
-          case 43: break;
+          case 44: break;
           case 10:
             { return "Operator: /";
             }
           // fall through
-          case 44: break;
+          case 45: break;
           case 11:
             { return "Number: " + yytext();
             }
           // fall through
-          case 45: break;
+          case 46: break;
           case 12:
             { return "Symbol: ;";
             }
           // fall through
-          case 46: break;
+          case 47: break;
           case 13:
             { return "Operator: <";
             }
           // fall through
-          case 47: break;
+          case 48: break;
           case 14:
             { return "Operator: =";
             }
           // fall through
-          case 48: break;
+          case 49: break;
           case 15:
             { return "Operator: >";
             }
           // fall through
-          case 49: break;
+          case 50: break;
           case 16:
             { return "Identifier: " + yytext();
             }
           // fall through
-          case 50: break;
+          case 51: break;
           case 17:
             { return "Symbol: {";
             }
           // fall through
-          case 51: break;
+          case 52: break;
           case 18:
             { return "Symbol: }";
             }
           // fall through
-          case 52: break;
+          case 53: break;
           case 19:
             { return "Operator: !=";
             }
           // fall through
-          case 53: break;
+          case 54: break;
           case 20:
             { return "Operator: &&";
             }
           // fall through
-          case 54: break;
+          case 55: break;
           case 21:
             { /* ignorar comentarios de línea */
             }
           // fall through
-          case 55: break;
-          case 22:
-            { return "Operator: <=";
-            }
-          // fall through
           case 56: break;
-          case 23:
-            { return "Operator: ==";
+          case 22:
+            { return "Error: Identifier cannot start with a digit";
             }
           // fall through
           case 57: break;
-          case 24:
-            { return "Operator: >=";
+          case 23:
+            { return "Operator: <=";
             }
           // fall through
           case 58: break;
-          case 25:
-            { return "Keyword: if";
+          case 24:
+            { return "Operator: ==";
             }
           // fall through
           case 59: break;
-          case 26:
-            { return "Operator: ||";
+          case 25:
+            { return "Operator: >=";
             }
           // fall through
           case 60: break;
-          case 27:
-            { return "Keyword: int";
+          case 26:
+            { return "Keyword: if";
             }
           // fall through
           case 61: break;
-          case 28:
-            { /* ignorar comentarios de bloque */
+          case 27:
+            { return "Operator: ||";
             }
           // fall through
           case 62: break;
-          case 29:
-            { return "Keyword: else";
+          case 28:
+            { return "Keyword: int";
             }
           // fall through
           case 63: break;
-          case 30:
-            { return "Keyword: true";
+          case 29:
+            { /* ignorar comentarios de bloque */
             }
           // fall through
           case 64: break;
-          case 31:
-            { return "Keyword: false";
+          case 30:
+            { return "Keyword: else";
             }
           // fall through
           case 65: break;
-          case 32:
-            { return "Keyword: while";
+          case 31:
+            { return "Keyword: true";
             }
           // fall through
           case 66: break;
-          case 33:
-            { return "Keyword: return";
+          case 32:
+            { return "Keyword: false";
             }
           // fall through
           case 67: break;
-          case 34:
-            { return "Keyword: boolean";
+          case 33:
+            { return "Keyword: while";
             }
           // fall through
           case 68: break;
+          case 34:
+            { return "Keyword: return";
+            }
+          // fall through
+          case 69: break;
+          case 35:
+            { return "Keyword: boolean";
+            }
+          // fall through
+          case 70: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }
