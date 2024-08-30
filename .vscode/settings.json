@@ -1,0 +1,5 @@
+{
+  "java.project.referencedLibraries": [
+    "class/lib/java-cup-bin-11b-20160615/java-cup-11b.jar"
+  ]
+}

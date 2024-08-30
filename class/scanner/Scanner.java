@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java_cup.runtime.Symbol;
 import parser.sym;
-import opt.MathOperations;
-import opt.ValueProcessor;
+import opt.Algebraic;
+import opt.ConstantF;
 
 
 @SuppressWarnings("fallthrough")
@@ -882,7 +882,7 @@ public class Scanner implements java_cup.runtime.Scanner {
           case 49: break;
           case 10:
             { adjustPosition(yytext()); 
-    String processedValue = MathOperations.processInteger(yytext());
+    String processedValue = Algebraic.processInteger(yytext());
     return generateSymbol(sym.INTLIT, processedValue);
             }
           // fall through
@@ -955,7 +955,7 @@ public class Scanner implements java_cup.runtime.Scanner {
           case 61: break;
           case 22:
             { adjustPosition(yytext()); 
-    String processedValue = ValueProcessor.processFloat(yytext());
+    String processedValue = ConstantF.processFloat(yytext());
     return generateSymbol(sym.FLOATLIT, processedValue);
             }
           // fall through

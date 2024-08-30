@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java_cup.runtime.Symbol;
 import parser.sym;
-import opt.MathOperations;
-import opt.ValueProcessor;
+import opt.Algebraic;
+import opt.ConstantF;
 
 %%
 
@@ -234,13 +234,13 @@ import opt.ValueProcessor;
 // Literales
 [0-9]+ { 
     adjustPosition(yytext()); 
-    String processedValue = MathOperations.processInteger(yytext());
+    String processedValue = Algebraic.processInteger(yytext());
     return generateSymbol(sym.INTLIT, processedValue); 
 }
 
 [0-9]*"."[0-9]+ { 
     adjustPosition(yytext()); 
-    String processedValue = ValueProcessor.processFloat(yytext());
+    String processedValue = ConstantF.processFloat(yytext());
     return generateSymbol(sym.FLOATLIT, processedValue); 
 }
 
