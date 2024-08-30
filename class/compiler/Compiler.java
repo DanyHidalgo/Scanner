@@ -1,5 +1,7 @@
-package class.compiler;
+package compiler;
 
-public class compiler {
-    
+public class Compiler {
+    public static void main(String[] args) {
+        System.out.println("Compiler");
+    }
 }

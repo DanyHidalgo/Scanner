@@ -1,5 +1,7 @@
-package class.ast;
+package ast;
 
-public class ast {
-    
+public class Ast {
+    public static void main(String[] args) {
+        System.out.println("Ast");
+    }
 }
