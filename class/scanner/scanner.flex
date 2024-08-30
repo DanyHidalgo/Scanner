@@ -47,12 +47,14 @@ ALPHANUM=[a-zA-Z0-9]
 ")"         { return "Symbol: )"; }
 ","         { return "Symbol: ,"; }
 ";"         { return "Symbol: ;"; } // Definición del punto y coma
+"{"         { return "Symbol: {"; } 
+"}"         { return "Symbol: }"; } 
 // Eliminar el manejo del punto como símbolo independiente
 //"."         { return "Symbol: ."; } // Esto se elimina
 
 /* Identificadores */
 {ALPHA}({ALPHANUM})*  { return "Identifier: " + yytext(); }
-{DIGIT}{ALPHANUM}+    { return "Error: Identifier cannot start with a digit"; }
+{DIGIT}{ALPHA}+{ALPHANUM}*    { return "Error: Identifier cannot start with a digit"; }
 
 /* Números enteros */
 {DIGIT}+  { return "Number: " + yytext(); }

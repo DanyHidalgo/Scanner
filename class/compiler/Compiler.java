@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringReader; // Importa StringReader
+
+import java_cup.runtime.Symbol;
 import scanner.Scanner;
 
 public class Compiler {
@@ -32,7 +34,7 @@ public class Compiler {
 
                 while ((token = scanner.yylex()) != null) {
                     // Check if the token is a semicolon and mark the line as ended correctly
-                    if (token.equals("Symbol: ;")) {
+                    if (token.equals("Symbol: ;")||(token.equals(("Symbol: {")))||(token.equals(("Symbol: }")))) {
                         lineEndedCorrectly = true;
                     }
                     processedLine.append(token).append("\n");
@@ -40,7 +42,7 @@ public class Compiler {
 
                 // Check if the line ended correctly with a semicolon
                 if (!lineEndedCorrectly) {
-                    processedLine.append("Error: Missing semicolon at the end of the line.");
+                    processedLine.append("Error: Missing semicolon, { or }at the end of the line.");
                 }
 
                 // Write the processed line to the output file
