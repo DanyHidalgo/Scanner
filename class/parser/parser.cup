@@ -11,7 +11,7 @@ terminal DIVIDE, INTLIT, STRINGLIT, FLOATLIT, ELSE, TRUE, FALSE, FLOAT, WHILE, P
 terminal PRIVATE, PROTECTED, VOID, FOR, LESS_THAN, EQUALS, IDENTIFIER, SEMICOLON;
 
 // Declaraciones de no terminales
-non terminal Object Program, Statement, Expression, Term, Factor, Identifier, Type;
+non terminal Program, Statement, Expression, Term, Factor, Identifier, Type;
 
 // Precedencia
 precedence right ELSE;
