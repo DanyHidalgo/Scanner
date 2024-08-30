@@ -1,0 +1,67 @@
+// Paquete
+package parser;
+
+// Importaciones necesarias
+import java_cup.runtime.*;
+
+// Declaraciones de símbolos (terminales)
+terminal INT, ID, IF, RETURN, NUM, PLUS, LESS_THAN_EQUALS, EQUALS_EQUALS, NOT_EQUALS, GREATER_THAN;
+terminal GREATER_THAN_EQUALS, LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE, COMMA, MINUS, MULTIPLY;
+terminal DIVIDE, INTLIT, STRINGLIT, FLOATLIT, ELSE, TRUE, FALSE, FLOAT, WHILE, PUBLIC, BOOLEAN;
+terminal PRIVATE, PROTECTED, VOID, FOR, LESS_THAN, EQUALS, IDENTIFIER, SEMICOLON;
+
+// Declaraciones de no terminales
+non terminal Object Program, Statement, Expression, Term, Factor, Identifier, Type;
+
+// Precedencia
+precedence right ELSE;
+precedence left PLUS, MINUS;
+precedence left MULTIPLY, DIVIDE;
+
+// Regla inicial
+start with Program;
+
+// Reglas de producción
+Program ::=
+    Statement SEMICOLON 
+    | Statement SEMICOLON Program
+    ;
+
+Statement ::=
+    Type Identifier EQUALS Expression
+    | IF LPAREN Expression RPAREN Statement %prec ELSE
+    | IF LPAREN Expression RPAREN Statement ELSE Statement
+    | WHILE LPAREN Expression RPAREN Statement
+    | RETURN Expression
+    ;
+
+Expression ::=
+    Expression PLUS Term
+    | Expression MINUS Term
+    | Term
+    ;
+
+Term ::=
+    Term MULTIPLY Factor
+    | Term DIVIDE Factor
+    | Factor
+    ;
+
+Factor ::=
+    LPAREN Expression RPAREN
+    | INTLIT
+    | FLOATLIT
+    | STRINGLIT
+    | Identifier
+    ;
+
+Identifier ::=
+    ID
+    ;
+
+Type ::=
+    INT 
+    | FLOAT
+    | BOOLEAN
+    | VOID
+    ;
