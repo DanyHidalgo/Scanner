@@ -19,7 +19,7 @@ ALPHANUM=[a-zA-Z0-9]
 /* Palabras reservadas */
 "if"        { return "Keyword: if"; }
 "else"      { return "Keyword: else"; }
-"while"     { return "Keyword: while"; }
+"while"     { return "Keyword: while"; } //agregar todas las palabras reservadas de Decaf que hacen falta y que retorne Reservadas en todas
 "return"    { return "Keyword: return"; }
 "int"       { return "Keyword: int"; }
 "boolean"   { return "Keyword: boolean"; }
@@ -32,11 +32,11 @@ ALPHANUM=[a-zA-Z0-9]
 "<="        { return "Operator: <="; }
 ">="        { return "Operator: >="; }
 "&&"        { return "Operator: &&"; }
-"||"        { return "Operator: ||"; }
+"||"        { return "Operator: ||"; } //cambiar a que lo que retorne sea el nombre de los operadores y simbolos en ingles y mayusculas
 "="         { return "Operator: ="; }
 "+"         { return "Operator: +"; }
 "-"         { return "Operator: -"; }
-"*"         { return "Operator: *"; }
+"*"         { return "Operator: *"; } //agregar columna y linea de cada una 
 "/"         { return "Operator: /"; }
 "<"         { return "Operator: <"; }
 ">"         { return "Operator: >"; }
@@ -49,8 +49,7 @@ ALPHANUM=[a-zA-Z0-9]
 ";"         { return "Symbol: ;"; } // Definición del punto y coma
 "{"         { return "Symbol: {"; } 
 "}"         { return "Symbol: }"; } 
-// Eliminar el manejo del punto como símbolo independiente
-//"."         { return "Symbol: ."; } // Esto se elimina
+
 
 /* Identificadores */
 {ALPHA}({ALPHANUM})*  { return "Identifier: " + yytext(); }

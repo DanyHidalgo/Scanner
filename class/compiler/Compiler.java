@@ -7,7 +7,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringReader; // Importa StringReader
 
-import java_cup.runtime.Symbol;
+import java_cup.runtime.Symbol; //Agregar la parte de o debug target y los que faltan para que el usuario decida que hacer y tambien si quiere hacer solo ciertas cosas
 import scanner.Scanner;
 
 public class Compiler {
