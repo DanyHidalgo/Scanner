@@ -1,0 +1,45 @@
+stage: scanning
+Reservada: int linea: 0 columna: 0
+id: x linea: 0 columna 4
+ASSIGN = linea: 0 columna: 6
+int: 10 linea: 0 columna: 8
+SEMICOLON ; linea: 0 columna: 10
+Reservada: int linea: 1 columna: 0
+id: y linea: 1 columna 4
+ASSIGN = linea: 1 columna: 6
+int: 20 linea: 1 columna: 8
+SEMICOLON ; linea: 1 columna: 10
+Error: id no puede iniciar con numero: 1variable linea: 2 columna: 0
+ASSIGN = linea: 2 columna: 10
+int: 30 linea: 2 columna: 12
+SEMICOLON ; linea: 2 columna: 14
+Reservada: boolean linea: 3 columna: 0
+id: isValid linea: 3 columna 8
+ASSIGN = linea: 3 columna: 16
+Reservada: true linea: 3 columna: 18
+SEMICOLON ; linea: 3 columna: 22
+Reservada: float linea: 4 columna: 0
+id: z linea: 4 columna 6
+ASSIGN = linea: 4 columna: 8
+float: 3.14 linea: 4 columna: 10
+SEMICOLON ; linea: 4 columna: 14
+Reservada: if linea: 5 columna: 0
+PAREN_A ( linea: 5 columna: 3
+id: x linea: 5 columna 4
+GREATER THAN > linea: 5 columna: 6
+id: y linea: 5 columna 8
+PAREN_B ) linea: 5 columna: 9
+BRACE_A { linea: 5 columna: 11
+id: z linea: 6 columna 4
+ASSIGN = linea: 6 columna: 6
+id: x linea: 6 columna 8
+ADD + linea: 6 columna: 10
+id: y linea: 6 columna 12
+BRACE_B } linea: 7 columna: 0
+Error: id no puede iniciar con numero: 2wrongName linea: 8 columna: 0
+ASSIGN = linea: 8 columna: 11
+int: 50 linea: 8 columna: 13
+SEMICOLON ; linea: 8 columna: 15
+Reservada: return linea: 9 columna: 0
+id: z linea: 9 columna 7
+SEMICOLON ; linea: 9 columna: 8

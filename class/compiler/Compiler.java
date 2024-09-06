@@ -1,61 +1,80 @@
 package compiler;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.StringReader; // Importa StringReader
-
-import java_cup.runtime.Symbol; //Agregar la parte de o debug target y los que faltan para que el usuario decida que hacer y tambien si quiere hacer solo ciertas cosas
+import java.util.HashSet;
+import java.util.Set;
 import scanner.Scanner;
 
 public class Compiler {
     public static void main(String[] args) {
-        try {
-            // Open the source file for reading
-            BufferedReader reader = new BufferedReader(new FileReader("class/compiler/input.txt"));
-            Scanner scanner = new Scanner(reader);
+        String inputFile = null;
+        String outputFile = "output.txt";
+        Set<String> debugStages = new HashSet<>();
 
-            // Open the destination file for writing the results
-            BufferedWriter writer = new BufferedWriter(new FileWriter("class/compiler/output.txt"));
-
-            String line;
-            String token;
-            boolean lineEndedCorrectly;
-
-            // Process each line from the input file
-            while ((line = reader.readLine()) != null) {
-                StringBuilder processedLine = new StringBuilder();
-                lineEndedCorrectly = false;
-
-                // Process tokens for the current line
-                scanner.yyreset(new StringReader(line)); // Reset scanner for the new line
-
-                while ((token = scanner.yylex()) != null) {
-                    // Check if the token is a semicolon and mark the line as ended correctly
-                    if (token.equals("Symbol: ;")||(token.equals(("Symbol: {")))||(token.equals(("Symbol: }")))) {
-                        lineEndedCorrectly = true;
+        // Parse command-line arguments
+        for (int i = 0; i < args.length; i++) {
+            switch (args[i]) {
+                case "-o":
+                    if (i + 1 < args.length) {
+                        outputFile = args[++i];
                     }
-                    processedLine.append(token).append("\n");
-                }
+                    break;
+                case "-debug":
+                    if (i + 1 < args.length) {
+                        String[] stages = args[++i].split(":");
+                        for (String stage : stages) {
+                            debugStages.add(stage);
+                        }
+                    }
+                    break;
+                default:
+                    if (args[i].startsWith("-")) {
+                        System.err.println("Unknown option: " + args[i]);
+                        return;
+                    }
+                    inputFile = args[i];
+                    break;
+            }
+        }
 
-                // Check if the line ended correctly with a semicolon
-                if (!lineEndedCorrectly) {
-                    processedLine.append("Error: Missing semicolon, { or }at the end of the line.");
-                }
+        if (inputFile == null) {
+            printHelp();
+            return;
+        }
 
-                // Write the processed line to the output file
-                writer.write(processedLine.toString());
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+
+            // Create and use the Scanner
+            Scanner scanner = new Scanner(reader);
+            if (debugStages.contains("scan")) {
+                System.out.println("Debugging scan");
             }
 
-            System.out.println("Scanning finished. Results saved to output.txt.");
+            writer.write("stage: scanning\n");
 
-            // Close the writer to finalize the output
+            // Process the entire file using the scanner
+            String token;
+            while ((token = scanner.yylex()) != null) {
+                writer.write(token + "\n");
+            }
+
             writer.close();
             reader.close();
         } catch (IOException e) {
             System.err.println("Error handling file: " + e.getMessage());
         }
+    }
+
+    private static void printHelp() {
+        System.out.println("Usage: java compiler [option] <filename>");
+        System.out.println("Options:");
+        System.out.println("  -o <outname>    Escribir el output a <outname>");
+        System.out.println("  -debug <stage>  Información de debugging para la etapa especificada");
     }
 }

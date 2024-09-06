@@ -9,60 +9,77 @@ import java.io.IOException;
 %class Scanner
 %unicode
 
+%column
+%line
+
 /* Definir caracteres */
 ALPHA=[a-zA-Z]
+MAYUSCULA=[A-Z]
 DIGIT=[0-9]
 ALPHANUM=[a-zA-Z0-9]
 
 %%
 
 /* Palabras reservadas */
-"if"        { return "Keyword: if"; }
-"else"      { return "Keyword: else"; }
-"while"     { return "Keyword: while"; } //agregar todas las palabras reservadas de Decaf que hacen falta y que retorne Reservadas en todas
-"return"    { return "Keyword: return"; }
-"int"       { return "Keyword: int"; }
-"boolean"   { return "Keyword: boolean"; }
-"true"      { return "Keyword: true"; }
-"false"     { return "Keyword: false"; }
+"class" |
+"else" |
+"false" |
+"for" |
+"if" |
+"int" |
+"return" |
+"true" |
+"void" |
+"while" |
+"this" |
+"new" |
+"null" |
+"public" |
+"private" |
+"static" |
+"break" |
+"continue" |
+"float" |
+"callout" |
+"boolean"   { return "Reservada: " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
 
 /* Operadores y símbolos */
-"=="        { return "Operator: =="; }
-"!="        { return "Operator: !="; }
-"<="        { return "Operator: <="; }
-">="        { return "Operator: >="; }
-"&&"        { return "Operator: &&"; }
-"||"        { return "Operator: ||"; } //cambiar a que lo que retorne sea el nombre de los operadores y simbolos en ingles y mayusculas
-"="         { return "Operator: ="; }
-"+"         { return "Operator: +"; }
-"-"         { return "Operator: -"; }
-"*"         { return "Operator: *"; } //agregar columna y linea de cada una 
-"/"         { return "Operator: /"; }
-"<"         { return "Operator: <"; }
-">"         { return "Operator: >"; }
-"!"         { return "Operator: !"; }
-"{"         { return "Symbol: {"; }
-"}"         { return "Symbol: }"; }
-"("         { return "Symbol: ("; }
-")"         { return "Symbol: )"; }
-","         { return "Symbol: ,"; }
-";"         { return "Symbol: ;"; } // Definición del punto y coma
-"{"         { return "Symbol: {"; } 
-"}"         { return "Symbol: }"; } 
-
-
-/* Identificadores */
-{ALPHA}({ALPHANUM})*  { return "Identifier: " + yytext(); }
-{DIGIT}{ALPHA}+{ALPHANUM}*    { return "Error: Identifier cannot start with a digit"; }
-
-/* Números enteros */
-{DIGIT}+  { return "Number: " + yytext(); }
-
-/* Números de punto flotante */
-{DIGIT}+("."{DIGIT}+)?  { return "Number: " + yytext(); }
+"=="        { return "EQUAL  " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"!="        { return "NOT EQUAL " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"<="        { return "LESS/EQUAL THAN " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+">="        { return "GREATER/EQUAL THAN " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"&&"        { return "AND " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"||"        { return "OR " + yytext() + " linea: " + yyline + " columna: " + yycolumn; } 
+"="         { return "ASSIGN " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"+"         { return "ADD " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"-"         { return " SUB " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"*"         { return "MULTIPLY " + yytext() + " linea: " + yyline + " columna: " + yycolumn; } 
+"/"         { return "DIVIDE " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"<"         { return "LESS THAN " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+">"         { return "GREATER THAN " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"!"         { return "NOT " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"{"         { return "BRACE_A " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"}"         { return "BRACE_B " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+"("         { return "PAREN_A " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+")"         { return "PAREN_B " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+","         { return "COMMA " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+";"         { return "SEMICOLON " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
 
 /* Ignorar espacios en blanco */
 [ \t\r\n]+   { /* ignorar */ }
+
+/* Números enteros */
+{DIGIT}+  { return "int: " + yytext() + " linea: " + yyline + " columna: " + yycolumn; } 
+
+/* Números de punto flotante */
+{DIGIT}+("."{DIGIT}+)?  { return "float: " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+
+
+/* Identificadores */
+{MAYUSCULA}({ALPHANUM})*    { return "Error: id no puede iniciar con mayuscula: " + yytext()  + " linea: " + yyline + " columna: " + yycolumn; }
+{ALPHA}({ALPHANUM})*  { return "id: " + yytext()  + " linea: " + yyline + " columna " + yycolumn; }
+{DIGIT}({ALPHANUM})*    { return "Error: id no puede iniciar con numero: " + yytext() + " linea: " + yyline + " columna: " + yycolumn; }
+
 
 /* Comentarios */
 // Simple line comment
@@ -72,4 +89,4 @@ ALPHANUM=[a-zA-Z0-9]
 "/"([^]|\+[^/])\+"/" { /* ignorar comentarios de bloque */ }
 
 /* Manejar caracteres desconocidos */
-.  { return "Carácter desconocido: " + yytext(); }
+.  { return "Carácter desconocido " + yytext() + "linea: " + yyline + "columna: " + yycolumn; }

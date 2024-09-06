@@ -94,12 +94,12 @@ Se creó una carpeta `.vscode` fuera de la carpeta `class`, la cual contiene arc
 
 2. Para compilar el proyecto completo, ejecuta el siguiente comando:
    ```bash
-   javac -d class -cp "class\lib\java-cup-bin-11b-20160615\java-cup-11b.jar;class\opt;." class\opt\Algebraic.java class\opt\ConstantF.java class\parser\Parser.java class\parser\sym.java class\scanner\Scanner.java class\compiler\Compiler.java
+   javac -d bin  compiler/Compiler.java scanner/Scanner.java 
    ```
 
 3. Para ejecutar el compilador desde la carpeta principal:
    ```bash
-   java -cp "class\lib\java-cup-bin-11b-20160615\java-cup-11b.jar;class\opt;class" compiler.Compiler
+   java -cp . compiler.Compiler -o output.txt -debug scan input.txt
    ```
 
 ## Makefile
