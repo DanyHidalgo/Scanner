@@ -13,7 +13,7 @@ import java_cup.runtime.XMLElement;
 @SuppressWarnings({"rawtypes"})
 public class Parser extends java_cup.runtime.lr_parser {
 
- public final Class getSymbolContainer() { // PARSER lista encadenada de lo que estaba haciendo (conctena los nodos de todo lo que está haciendo el Scanner)
+ public final Class getSymbolContainer() {
     return sym.class;
 }
 

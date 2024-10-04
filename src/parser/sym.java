@@ -12,27 +12,40 @@ public class sym {
   public static final int LBRACKET = 15;
   public static final int EQUALS = 38;
   public static final int STRINGLIT = 24;
+  public static final int CONTINUE = 55;
   public static final int LPAREN = 13;
   public static final int PRIVATE = 33;
   public static final int INT = 2;
   public static final int FOR = 36;
   public static final int MINUS = 20;
   public static final int GREATER_THAN = 11;
+  public static final int STATIC = 53;
   public static final int RPAREN = 14;
+  public static final int AND = 46;
+  public static final int NOT = 41;
   public static final int SEMICOLON = 40;
   public static final int INTLIT = 23;
+  public static final int CALLOUT = 54;
+  public static final int OR = 47;
   public static final int COMMA = 19;
+  public static final int CLASS = 52;
   public static final int NUM = 6;
   public static final int PLUS = 7;
   public static final int MULTIPLY = 21;
   public static final int IF = 4;
+  public static final int THIS = 50;
   public static final int ID = 3;
   public static final int EOF = 0;
   public static final int BOOLEAN = 32;
   public static final int RETURN = 5;
+  public static final int BRACE_B = 45;
   public static final int RBRACKET = 16;
+  public static final int BRACE_A = 44;
   public static final int TRUE = 27;
+  public static final int NEW = 48;
   public static final int error = 1;
+  public static final int NULL = 49;
+  public static final int BREAK = 51;
   public static final int VOID = 35;
   public static final int FLOATLIT = 25;
   public static final int LBRACE = 17;
@@ -44,6 +57,8 @@ public class sym {
   public static final int PUBLIC = 31;
   public static final int RBRACE = 18;
   public static final int EQUALS_EQUALS = 9;
+  public static final int PAREN_B = 43;
+  public static final int PAREN_A = 42;
   public static final int FALSE = 28;
   public static final int GREATER_THAN_EQUALS = 12;
   public static final int LESS_THAN = 37;
@@ -90,7 +105,22 @@ public class sym {
   "LESS_THAN",
   "EQUALS",
   "IDENTIFIER",
-  "SEMICOLON"
+  "SEMICOLON",
+  "NOT",
+  "PAREN_A",
+  "PAREN_B",
+  "BRACE_A",
+  "BRACE_B",
+  "AND",
+  "OR",
+  "NEW",
+  "NULL",
+  "THIS",
+  "BREAK",
+  "CLASS",
+  "STATIC",
+  "CALLOUT",
+  "CONTINUE"
   };
 }
 

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import scanner.Scanner;
+import java_cup.runtime.Symbol;
 
 public class Compiler {
     public static void main(String[] args) {
@@ -50,31 +51,34 @@ public class Compiler {
             BufferedReader reader = new BufferedReader(new FileReader(inputFile));
             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
 
-            // Create and use the Scanner
+            // Crear y usar el scanner
             Scanner scanner = new Scanner(reader);
+            Symbol token;
+
             if (debugStages.contains("scan")) {
-                System.out.println("Debugging scan");
+                System.out.println("Debugging scan stage...");
             }
 
-            writer.write("stage: scanning\n");
+            writer.write("Stage: scanning\n");
 
-            // Process the entire file using the scanner
-            String token;
+            // Procesar el archivo usando el scanner
             while ((token = scanner.yylex()) != null) {
-                writer.write(token + "\n");
+                writer.write("Token: " + token.sym + " (" + token.value + ") at line " + token.left + ", column " + token.right + "\n");
             }
 
             writer.close();
             reader.close();
         } catch (IOException e) {
             System.err.println("Error handling file: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error during scanning: " + e.getMessage());
         }
     }
 
     private static void printHelp() {
         System.out.println("Usage: java compiler [option] <filename>");
         System.out.println("Options:");
-        System.out.println("  -o <outname>    Escribir el output a <outname>");
-        System.out.println("  -debug <stage>  Información de debugging para la etapa especificada");
+        System.out.println("  -o <outname>    Write output to <outname>");
+        System.out.println("  -debug <stage>  Debug information for the specified stage");
     }
 }
