@@ -1,7 +1,15 @@
-package scanner;
 
-import compiler.parser.sym
-import java_cup.runtime.Symbol;
+/*scanner.flex*/
+/* definir que jale todos aqui. osea que aqui lo integra para poder hacer el parser*/
+/* hay que pasar todo aca para que use el scanner.flex y pareser.cup en un mismo dir.*/
+
+package parser;
+
+%{
+   import java_cup.runtime.Symbol;
+%}
+%cup // Indica que se está utilizando con JavaCUP
+
 import java.io.Reader;
 import java.io.IOException;
 
@@ -11,8 +19,9 @@ import java.io.IOException;
 %class Scanner
 %unicode
 
-%column
+%cup // Indica que se está utilizando con JavaCUP
 %line
+%column
 
 /* Definir caracteres */
 ALPHA=[a-zA-Z]
