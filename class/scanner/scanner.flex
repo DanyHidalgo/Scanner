@@ -28,6 +28,7 @@ ALPHANUM=[a-zA-Z0-9]
 "if" |
 "int" |
 "return" |
+"Program" |
 "true" |
 "void" |
 "while" |
@@ -86,7 +87,8 @@ ALPHANUM=[a-zA-Z0-9]
 "//"[^(\r|\n)]* { /* ignorar comentarios de línea */ }
 
 // Block comment
-"/"([^]|\+[^/])\+"/" { /* ignorar comentarios de bloque */ }
+"/*"([^*]|\*+[^*/])*\*+\/ { /* ignorar comentarios de bloque */ }
+
 
 /* Manejar caracteres desconocidos */
 .  { return "Carácter desconocido " + yytext() + "linea: " + yyline + "columna: " + yycolumn; }
