@@ -63,7 +63,7 @@ public class Compiler {
 
             // Procesar el archivo usando el scanner
             while ((token = scanner.yylex()) != null) {
-                writer.write("Token: " + token.sym + " (" + token.value + ") at line " + token.left + ", column " + token.right + "\n");
+                writer.write("Token: " + token.sym + " (" + token.value + ")" + "\n");         
             }
 
             writer.close();

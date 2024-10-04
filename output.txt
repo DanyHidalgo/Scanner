@@ -1,90 +1,90 @@
 Stage: scanning
-Token: 52 (null) at line 0, column 0
-Token: 3 (Program) at line -1, column -1
-Token: 44 (null) at line 0, column 14
-Token: 32 (null) at line 1, column 4
-Token: 3 (entrada) at line -1, column -1
-Token: 40 (null) at line 1, column 19
-Token: 2 (null) at line 2, column 4
-Token: 3 (numeros) at line -1, column -1
-Token: 40 (null) at line 2, column 15
-Token: 2 (null) at line 4, column 4
-Token: 3 (suma) at line -1, column -1
-Token: 42 (null) at line 4, column 12
-Token: 2 (null) at line 4, column 13
-Token: 3 (valor1) at line -1, column -1
-Token: 19 (null) at line 4, column 23
-Token: 2 (null) at line 4, column 25
-Token: 3 (valor2) at line -1, column -1
-Token: 43 (null) at line 4, column 35
-Token: 44 (null) at line 4, column 36
-Token: 2 (null) at line 5, column 8
-Token: 3 (res) at line -1, column -1
-Token: 40 (null) at line 5, column 15
-Token: 3 (res) at line -1, column -1
-Token: 38 (null) at line 6, column 12
-Token: 3 (valor1) at line -1, column -1
-Token: 7 (null) at line 6, column 21
-Token: 3 (valor2) at line -1, column -1
-Token: 40 (null) at line 6, column 29
-Token: 5 (null) at line 7, column 8
-Token: 3 (res) at line -1, column -1
-Token: 40 (null) at line 7, column 18
-Token: 45 (null) at line 8, column 4
-Token: 35 (null) at line 16, column 4
-Token: 3 (main) at line -1, column -1
-Token: 42 (null) at line 16, column 13
-Token: 43 (null) at line 16, column 14
-Token: 44 (null) at line 16, column 15
-Token: 2 (null) at line 17, column 8
-Token: 3 (resultado1) at line -1, column -1
-Token: 19 (null) at line 17, column 22
-Token: 3 (resultado2) at line -1, column -1
-Token: 40 (null) at line 17, column 34
-Token: 32 (null) at line 18, column 8
-Token: 3 (resultado3) at line -1, column -1
-Token: 40 (null) at line 18, column 26
-Token: 3 (entrada) at line -1, column -1
-Token: 38 (null) at line 19, column 16
-Token: 27 (null) at line 19, column 18
-Token: 40 (null) at line 19, column 22
-Token: 4 (null) at line 21, column 8
-Token: 42 (null) at line 21, column 11
-Token: 3 (entrada) at line -1, column -1
-Token: 9 (null) at line 21, column 20
-Token: 27 (null) at line 21, column 23
-Token: 43 (null) at line 21, column 27
-Token: 44 (null) at line 21, column 28
-Token: 3 (resultado1) at line -1, column -1
-Token: 38 (null) at line 22, column 23
-Token: 3 (suma) at line -1, column -1
-Token: 42 (null) at line 22, column 29
-Token: 23 (30) at line 3, column 22
-Token: 19 (null) at line 22, column 31
-Token: 23 (32) at line 2, column 22
-Token: 43 (null) at line 22, column 33
-Token: 40 (null) at line 22, column 34
-Token: 45 (null) at line 23, column 8
-Token: 3 (entrada) at line -1, column -1
-Token: 38 (null) at line 24, column 16
-Token: 28 (null) at line 24, column 18
-Token: 40 (null) at line 24, column 23
-Token: 4 (null) at line 25, column 8
-Token: 42 (null) at line 25, column 11
-Token: 3 (entrada) at line -1, column -1
-Token: 9 (null) at line 25, column 20
-Token: 27 (null) at line 25, column 23
-Token: 43 (null) at line 25, column 27
-Token: 44 (null) at line 25, column 28
-Token: 3 (resultado1) at line -1, column -1
-Token: 38 (null) at line 26, column 23
-Token: 3 (suma) at line -1, column -1
-Token: 42 (null) at line 26, column 29
-Token: 23 (30) at line 3, column 26
-Token: 19 (null) at line 26, column 31
-Token: 23 (32) at line 2, column 26
-Token: 43 (null) at line 26, column 33
-Token: 40 (null) at line 26, column 34
-Token: 45 (null) at line 27, column 8
-Token: 45 (null) at line 28, column 4
-Token: 45 (null) at line 29, column 0
+Token: 52 ( linea 0 columna 0)
+Token: 3 (Program linea 0 columna 6)
+Token: 44 ( linea 0 columna 14)
+Token: 32 ( linea 1 columna 4)
+Token: 3 (entrada linea 1 columna 12)
+Token: 40 ( linea 1 columna 19)
+Token: 2 ( linea 2 columna 4)
+Token: 3 (numeros linea 2 columna 8)
+Token: 40 ( linea 2 columna 15)
+Token: 2 ( linea 4 columna 4)
+Token: 3 (suma linea 4 columna 8)
+Token: 42 ( linea 4 columna 12)
+Token: 2 ( linea 4 columna 13)
+Token: 3 (valor1 linea 4 columna 17)
+Token: 19 ( linea 4 columna 23)
+Token: 2 ( linea 4 columna 25)
+Token: 3 (valor2 linea 4 columna 29)
+Token: 43 ( linea 4 columna 35)
+Token: 44 ( linea 4 columna 36)
+Token: 2 ( linea 5 columna 8)
+Token: 3 (res linea 5 columna 12)
+Token: 40 ( linea 5 columna 15)
+Token: 3 (res linea 6 columna 8)
+Token: 38 ( linea 6 columna 12)
+Token: 3 (valor1 linea 6 columna 14)
+Token: 7 ( linea 6 columna 21)
+Token: 3 (valor2 linea 6 columna 23)
+Token: 40 ( linea 6 columna 29)
+Token: 5 ( linea 7 columna 8)
+Token: 3 (res linea 7 columna 15)
+Token: 40 ( linea 7 columna 18)
+Token: 45 ( linea 8 columna 4)
+Token: 35 ( linea 16 columna 4)
+Token: 3 (main linea 16 columna 9)
+Token: 42 ( linea 16 columna 13)
+Token: 43 ( linea 16 columna 14)
+Token: 44 ( linea 16 columna 15)
+Token: 2 ( linea 17 columna 8)
+Token: 3 (resultado1 linea 17 columna 12)
+Token: 19 ( linea 17 columna 22)
+Token: 3 (resultado2 linea 17 columna 24)
+Token: 40 ( linea 17 columna 34)
+Token: 32 ( linea 18 columna 8)
+Token: 3 (resultado3 linea 18 columna 16)
+Token: 40 ( linea 18 columna 26)
+Token: 3 (entrada linea 19 columna 8)
+Token: 38 ( linea 19 columna 16)
+Token: 27 ( linea 19 columna 18)
+Token: 40 ( linea 19 columna 22)
+Token: 4 ( linea 21 columna 8)
+Token: 42 ( linea 21 columna 11)
+Token: 3 (entrada linea 21 columna 12)
+Token: 9 ( linea 21 columna 20)
+Token: 27 ( linea 21 columna 23)
+Token: 43 ( linea 21 columna 27)
+Token: 44 ( linea 21 columna 28)
+Token: 3 (resultado1 linea 22 columna 12)
+Token: 38 ( linea 22 columna 23)
+Token: 3 (suma linea 22 columna 25)
+Token: 42 ( linea 22 columna 29)
+Token: 23 (3 linea 22 columna 30)
+Token: 19 ( linea 22 columna 31)
+Token: 23 (2 linea 22 columna 32)
+Token: 43 ( linea 22 columna 33)
+Token: 40 ( linea 22 columna 34)
+Token: 45 ( linea 23 columna 8)
+Token: 3 (entrada linea 24 columna 8)
+Token: 38 ( linea 24 columna 16)
+Token: 28 ( linea 24 columna 18)
+Token: 40 ( linea 24 columna 23)
+Token: 4 ( linea 25 columna 8)
+Token: 42 ( linea 25 columna 11)
+Token: 3 (entrada linea 25 columna 12)
+Token: 9 ( linea 25 columna 20)
+Token: 27 ( linea 25 columna 23)
+Token: 43 ( linea 25 columna 27)
+Token: 44 ( linea 25 columna 28)
+Token: 3 (resultado1 linea 26 columna 12)
+Token: 38 ( linea 26 columna 23)
+Token: 3 (suma linea 26 columna 25)
+Token: 42 ( linea 26 columna 29)
+Token: 23 (3 linea 26 columna 30)
+Token: 19 ( linea 26 columna 31)
+Token: 23 (2 linea 26 columna 32)
+Token: 43 ( linea 26 columna 33)
+Token: 40 ( linea 26 columna 34)
+Token: 45 ( linea 27 columna 8)
+Token: 45 ( linea 28 columna 4)
+Token: 45 ( linea 29 columna 0)
