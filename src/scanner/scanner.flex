@@ -1,94 +1,96 @@
-package scanner;
+// Paquete
+package parser;
 
-import parser.sym;
-import java.io.Reader;
-import java.io.IOException;
-import java_cup.runtime.Symbol;
+// Importaciones necesarias
+import java_cup.runtime.*;
 
-%%
-/* Definir las opciones de JFlex */
-%public
-%class Scanner
-%unicode
+// Declaraciones de símbolos (terminales)
+terminal INT, ID, IF, RETURN, NUM, PLUS, LESS_THAN_EQUALS, EQUALS_EQUALS, NOT_EQUALS, GREATER_THAN;
+terminal GREATER_THAN_EQUALS, LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE, COMMA, MINUS, MULTIPLY;
+terminal DIVIDE, MOD, INTLIT, STRINGLIT, FLOATLIT, ELSE, TRUE, FALSE, FLOAT, WHILE, PUBLIC, BOOLEAN;
+terminal PRIVATE, PROTECTED, VOID, FOR, LESS_THAN, EQUALS, IDENTIFIER, SEMICOLON;
+terminal NOT, PAREN_A, PAREN_B, BRACE_A, BRACE_B, AND, OR, NEW, NULL, THIS, BREAK, CLASS, STATIC, CALLOUT, CONTINUE;
+terminal DOT;
 
-%column
-%line
+// Declaraciones de no terminales
+non terminal Program, Statement, Expression, Term, Factor, Identifier, Type, FieldDecl, FieldDecls, MethodDecls, MethodDecl, ParamList, Param, Block, VarDecl, VarDecls, Statements;
 
-/* Definir caracteres */
-ALPHA=[a-zA-Z]
-MAYUSCULA=[A-Z]
-DIGIT=[0-9]
-ALPHANUM=[a-zA-Z0-9]
+// Precedencia
+precedence right ELSE;
+precedence left PLUS, MINUS;
+precedence left MULTIPLY, DIVIDE;
 
-%%
+// Regla inicial
+start with Program;
 
-/* Palabras reservadas */
-"class"        { return new Symbol(sym.CLASS, " linea " + yyline + " columna " + yycolumn); }
-"else"         { return new Symbol(sym.ELSE, " linea " + yyline + " columna " + yycolumn); }
-"false"        { return new Symbol(sym.FALSE, " linea " + yyline + " columna " + yycolumn); }
-"for"          { return new Symbol(sym.FOR, " linea " + yyline + " columna " + yycolumn); }
-"if"           { return new Symbol(sym.IF, " linea " + yyline + " columna " + yycolumn); }
-"int"          { return new Symbol(sym.INT, " linea " + yyline + " columna " + yycolumn); }
-"return"       { return new Symbol(sym.RETURN, " linea " + yyline + " columna " + yycolumn); }
-"Program"      { return new Symbol(sym.ID, yytext() + " linea " + yyline + " columna " + yycolumn); }
-"true"         { return new Symbol(sym.TRUE, " linea " + yyline + " columna " + yycolumn); }
-"void"         { return new Symbol(sym.VOID, " linea " + yyline + " columna " + yycolumn); }
-"while"        { return new Symbol(sym.WHILE, " linea " + yyline + " columna " + yycolumn); }
-"this"         { return new Symbol(sym.THIS, " linea " + yyline + " columna " + yycolumn); }
-"new"          { return new Symbol(sym.NEW, " linea " + yyline + " columna " + yycolumn); }
-"null"         { return new Symbol(sym.NULL, " linea " + yyline + " columna " + yycolumn); }
-"public"       { return new Symbol(sym.PUBLIC, " linea " + yyline + " columna " + yycolumn); }
-"private"      { return new Symbol(sym.PRIVATE, " linea " + yyline + " columna " + yycolumn); }
-"static"       { return new Symbol(sym.STATIC, " linea " + yyline + " columna " + yycolumn); }
-"break"        { return new Symbol(sym.BREAK, " linea " + yyline + " columna " + yycolumn); }
-"continue"     { return new Symbol(sym.CONTINUE, " linea " + yyline + " columna " + yycolumn); }
-"float"        { return new Symbol(sym.FLOAT, " linea " + yyline + " columna " + yycolumn); }
-"callout"      { return new Symbol(sym.CALLOUT, " linea " + yyline + " columna " + yycolumn); }
-"boolean"      { return new Symbol(sym.BOOLEAN, " linea " + yyline + " columna " + yycolumn); }
+// Reglas de producción
+Program ::=
+    CLASS ID LBRACE FieldDecls MethodDecls RBRACE;
 
-/* Operadores y símbolos */
-"=="           { return new Symbol(sym.EQUALS_EQUALS, " linea " + yyline + " columna " + yycolumn); }
-"!="           { return new Symbol(sym.NOT_EQUALS, " linea " + yyline + " columna " + yycolumn); }
-"<="           { return new Symbol(sym.LESS_THAN_EQUALS, " linea " + yyline + " columna " + yycolumn); }
-">="           { return new Symbol(sym.GREATER_THAN_EQUALS, " linea " + yyline + " columna " + yycolumn); }
-"&&"           { return new Symbol(sym.AND, " linea " + yyline + " columna " + yycolumn); }
-"||"           { return new Symbol(sym.OR, " linea " + yyline + " columna " + yycolumn); }
-"="            { return new Symbol(sym.EQUALS, " linea " + yyline + " columna " + yycolumn); }
-"+"            { return new Symbol(sym.PLUS, " linea " + yyline + " columna " + yycolumn); }
-"-"            { return new Symbol(sym.MINUS, " linea " + yyline + " columna " + yycolumn); }
-"*"            { return new Symbol(sym.MULTIPLY, " linea " + yyline + " columna " + yycolumn); }
-"/"            { return new Symbol(sym.DIVIDE, " linea " + yyline + " columna " + yycolumn); }
-"<"            { return new Symbol(sym.LESS_THAN, " linea " + yyline + " columna " + yycolumn); }
-">"            { return new Symbol(sym.GREATER_THAN, " linea " + yyline + " columna " + yycolumn); }
-"!"            { return new Symbol(sym.NOT, " linea " + yyline + " columna " + yycolumn); }
-"{"            { return new Symbol(sym.BRACE_A, " linea " + yyline + " columna " + yycolumn); }
-"}"            { return new Symbol(sym.BRACE_B, " linea " + yyline + " columna " + yycolumn); }
-"("            { return new Symbol(sym.PAREN_A, " linea " + yyline + " columna " + yycolumn); }
-")"            { return new Symbol(sym.PAREN_B, " linea " + yyline + " columna " + yycolumn); }
-","            { return new Symbol(sym.COMMA, " linea " + yyline + " columna " + yycolumn); }
-";"            { return new Symbol(sym.SEMICOLON, " linea " + yyline + " columna " + yycolumn); }
+FieldDecls ::=
+    FieldDecl
+    | FieldDecl FieldDecls;
 
-/* Números enteros */
-{DIGIT}+       { return new Symbol(sym.INTLIT, Integer.parseInt(yytext()) + " linea " + yyline + " columna " + yycolumn); }
+MethodDecls ::=
+    MethodDecl
+    | MethodDecl MethodDecls;
 
-/* Números de punto flotante */
-{DIGIT}+("."{DIGIT}+)?  { return new Symbol(sym.FLOATLIT, Float.parseFloat(yytext()) + " linea " + yyline + " columna " + yycolumn); }
+MethodDecl ::=
+    Type ID LPAREN ParamList RPAREN Block
+    | VOID ID LPAREN ParamList RPAREN Block;
 
-/* Identificadores */
-{MAYUSCULA}({ALPHANUM})*    { return new Symbol(sym.error, "Error: id no puede iniciar con mayuscula: " + yytext() + " linea " + yyline + " columna " + yycolumn); }
-{ALPHA}({ALPHANUM})*        { return new Symbol(sym.ID, yytext() + " linea " + yyline + " columna " + yycolumn); }
-{DIGIT}({ALPHANUM})*        { return new Symbol(sym.error, "Error: id no puede iniciar con numero: " + yytext() + " linea " + yyline + " columna " + yycolumn); }
+ParamList ::=
+    Param
+    | Param COMMA ParamList
+    | /* producción vacía */;
 
+Param ::=
+    Type ID;
 
-/* Ignorar espacios en blanco */
-[ \t\r\n]+    { /* ignorar */ }
+Statement ::=
+    IF LPAREN Expression RPAREN Block ELSE Block
+  | IF LPAREN Expression RPAREN Block
+  | FOR ID EQUALS Expression COMMA Expression Block
+  | RETURN Expression SEMICOLON
+  | RETURN SEMICOLON
+  | Block;
 
-/* Comentarios */
-// Simple line comment
-"//"[^(\r|\n)]* { /* ignorar comentarios de línea */ }
+Block ::=
+    LBRACE VarDecls Statements RBRACE;
 
-// Block comment
-"/*"([^*]|\*+[^*/])*\*+\/ { /* ignorar comentarios de bloque */ }
+VarDecls ::=
+    VarDecl
+    | VarDecl VarDecls
+    | /* producción vacía */;
 
-/* Manejar caracteres desconocidos */
-.  { return new Symbol(sym.error, "Carácter desconocido " + yytext() + " linea " + yyline + " columna " + yycolumn);}
+Statements ::=
+    Statement
+    | Statement Statements
+    | /* producción vacía */;
+
+Expression ::=
+    Expression PLUS Term
+    | Expression MINUS Term
+    | Term;
+
+Term ::=
+    Term MULTIPLY Factor
+    | Term DIVIDE Factor
+    | Term MOD Factor
+    | Factor;
+
+Factor ::=
+    LPAREN Expression RPAREN
+    | INTLIT
+    | FLOATLIT
+    | STRINGLIT
+    | ID
+    | ID LBRACKET Expression RBRACKET;
+
+Identifier ::=
+    ID;
+
+Type ::=
+    INT 
+    | BOOLEAN
+    | FLOAT;
