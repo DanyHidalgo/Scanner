@@ -1,105 +1,110 @@
 package compiler;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import scanner.Scanner; // Tu escáner personalizado
-import scanner.CustomScannerAdapter; // Importar el adaptador personalizado
-import java_cup.runtime.Symbol;
-import parser.Parser; // Importar el parser
+import parser.Parser;
 import parser.sym;
+import scanner.Scanner;
+import java_cup.runtime.Symbol;
+import java.io.PrintWriter;
+import java.io.PrintStream;
+import java.io.File; // <-- Import the File class
 
 public class Compiler {
-    public static void main(String[] args) {
-        String inputFilePath = null;
-        String outputFilePath = "output.txt";
-        Set<String> debugStages = new HashSet<>();
 
-        // Procesar argumentos de línea de comandos
+    public static void main(String[] args) {
+        // Validar argumentos
+        if (args.length < 1) {
+            System.err.println(
+                    "Uso: java Compiler -target [scan|parse|ast|semantic|irt|codegen] -opt [constant|algebraic] -debug [scan:parse:etc] -o [outputfile] filename");
+            System.exit(1);
+        }
+
+        String target = null;
+        String opt = null;
+        String debug = null;
+        String outputFileName = "output.txt"; // Archivo de salida por defecto para el escaneo
+        String outputParserFileName = "parser.txt"; // Archivo de salida por defecto para el parser
+        String inputFileName = null;
+
+        // Procesar los argumentos
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
-                case "-o":
-                    if (i + 1 < args.length) {
-                        outputFilePath = args[++i];
-                    }
+                case "-target":
+                    target = args[++i];
+                    break;
+                case "-opt":
+                    opt = args[++i];
                     break;
                 case "-debug":
-                    if (i + 1 < args.length) {
-                        String[] stages = args[++i].split(":");
-                        for (String stage : stages) {
-                            debugStages.add(stage);
-                        }
-                    }
+                    debug = args[++i];
+                    break;
+                case "-o":
+                    outputFileName = args[++i];
                     break;
                 default:
-                    if (args[i].startsWith("-")) {
-                        System.err.println("Opción desconocida: " + args[i]);
-                        return;
-                    }
-                    inputFilePath = args[i];
+                    inputFileName = args[i];
                     break;
             }
         }
 
-        if (inputFilePath == null) {
-            showUsageInstructions();
-            return;
+        if (inputFileName == null) {
+            System.err.println("Debe proporcionar un archivo de entrada.");
+            System.exit(1);
         }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
+        try {
+            // Abrir archivo de entrada para leer
+            BufferedReader reader = new BufferedReader(new FileReader(inputFileName));
+            Scanner scanner = new Scanner(reader);
 
-            // Crear el escáner personalizado
-            Scanner myScanner = new Scanner(reader);
-            CustomScannerAdapter adapter = new CustomScannerAdapter(myScanner);
-            Parser parser = new Parser(adapter);
+            // Abrir archivo de salida para escribir los resultados
+            BufferedWriter writer = null;
 
-            writer.write("Etapa: escaneo\n");
-
-            if (debugStages.contains("scan")) {
-                System.out.println("Depurando la etapa de escaneo...");
-            }
-
-            // Procesar el archivo utilizando el escáner adaptado
-            Symbol token;
-            while ((token = adapter.next_token()) != null && token.sym != sym.EOF) {
-                writer.write("Token: " + token.sym + " (" + token.value + ")\n");
-                if (debugStages.contains("scan")) {
-                    System.out.println("Token: " + token.sym + " (" + token.value + ")");
+            // Escanear tokens si target es "scan"
+            if ("scan".equals(target)) {
+                writer = new BufferedWriter(new FileWriter(outputFileName));
+                Symbol token;
+                while ((token = scanner.next_token()) != null) {
+                    // Asegúrate de usar el sym correcto
+                    if (token.sym >= 0 && token.sym < sym.terminalNames.length) {
+                        String tokenName = sym.terminalNames[token.sym];
+                        String tokenValue = (token.value != null) ? token.value.toString() : "";
+                        writer.write("Token: " + tokenName + " " + tokenValue + ", Línea: " + token.left + ", Columna: "
+                                + token.right + "\n");
+                    } else {
+                        writer.write("Unknown token: " + token.sym + ", Línea: " + token.left + ", Columna: "
+                                + token.right + "\n");
+                    }
                 }
             }
+            // Ejecutar el parser si target es "parse"
+            else if ("parse".equals(target)) {
+                // Create PrintStream for capturing parser output
+                PrintStream parserOutput = new PrintStream(new File(outputParserFileName)); // <-- Corrected this line
 
-            // Usar el parser para analizar el archivo
-            writer.write("\nEtapa: análisis sintáctico\n");
-            if (debugStages.contains("parse")) {
-                System.out.println("Depurando la etapa de análisis sintáctico...");
+                // Redirect System.out to write into output_parser.txt
+                System.setOut(parserOutput);
+
+                Parser parser = new Parser(scanner);
+                parser.parse(); // Ejecutar el análisis sintáctico
+
+                // Close the parser output stream
+                parserOutput.close();
             }
 
-            try {
-                parser.parse();
-                writer.write("Análisis completado.\n");
-            } catch (Exception e) {
-                writer.write("Error de análisis sintáctico: " + e.getMessage() + "\n");
-                System.err.println("Error de análisis sintáctico: " + e.getMessage());
-                parser.reportError(e.getMessage()); //si tu Parser tiene ese método
+            if (writer != null) {
+                writer.close();
             }
-
+            reader.close();
         } catch (IOException e) {
-            System.err.println("Error al manejar el archivo: " + e.getMessage());
+            System.err.println("Error manejando archivo: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("Error durante el procesamiento: " + e.getMessage());
-            e.printStackTrace(); // Para ayudar a depurar en caso de error
+            System.err.println("Error durante el análisis sintáctico: " + e.getMessage());
+            e.printStackTrace();
         }
-    }
-
-    private static void showUsageInstructions() {
-        System.out.println("Uso: java compiler [opción] <nombre del archivo>");
-        System.out.println("Opciones:");
-        System.out.println("  -o <nombreSalida>    Escribir salida en <nombreSalida>");
-        System.out.println("  -debug <etapa>      Información de depuración para la etapa especificada (scan:parse)");
     }
 }

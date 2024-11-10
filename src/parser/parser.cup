@@ -1,224 +1,128 @@
+// Paquete
 package parser;
 
+// Importaciones necesarias
 import java_cup.runtime.*;
 
-/* Terminales */
-terminal CLASS, ID, LBRACE, RBRACE, SEMI, INT, BOOLEAN, CHAR, VOID,
-         IF, ELSE, FOR, WHILE, RETURN, BREAK, CONTINUE, CALLOUT,
-         ASSIGN, PLUS_ASSIGN, MINUS_ASSIGN, PLUS, MINUS, TIMES, DIVIDE,
-         MOD, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, TRUE, FALSE,
-         COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, INT_LITERAL,
-         CHAR_LITERAL, STRING_LITERAL, NEW, UMINUS, PRIVATE, PUBLIC, THIS, NULL, DEF;
+// Declaraciones de símbolos (terminales)
+terminal CLASS, ID, IF, ELSE, WHILE, RETURN, INT, BOOLEAN, FLOAT, VOID;
+terminal PLUS, MINUS, MULTIPLY, DIVIDE, ASSIGN, LESS_THAN, GREATER_THAN, LESS_THAN_EQUALS, GREATER_THAN_EQUALS, EQUALS_EQUALS, NOT_EQUALS, SEMICOLON;
+terminal LPAREN, RPAREN, LBRACE, RBRACE, COMMA, INTLIT, FLOATLIT, STRINGLIT, TRUE, FALSE, ERROR,TIMES,NUMBER,NOT, AND,OR;
 
-/* No terminales */
-non terminal program, class_declaration_list, class_declaration, class_body_member,
-             class_body_member_list, method_decl_rest, id_with_optional_array,
-             param_list, block, var_decl_list, var_decl, id_plus_array_list,
-             statement_list, statement, expr_opt, assign_op, location,
-             method_call, method_name, expr_plus_list_opt, expr_plus_list,
-             opt_comma_callout_arg_list, callout_arg_list, callout_arg,
-             expr, assign_expr, bin_op, arith_op, rel_op, eq_op, cond_op, literal,
-             int_literal, char_literal, bool_literal, type, for_init_expr,
-             for_update_expr, access_modifier, function_decl, param,
-             function_decl_list, assign_opt, variable_member, method_member;
+// Declaraciones de no terminales
+non terminal Program, ClassDeclaration, BodyDeclarations, FieldDeclaration, MethodDeclaration;
+non terminal Statement, Expression, Term, Factor, Identifier, Type, FormalParameters, Block;
 
-/* Precedencias */
-precedence left OR;
-precedence left AND;
-precedence nonassoc EQ, NEQ;
-precedence nonassoc LT, GT, LE, GE;
+// Precedencia
+precedence right ELSE;
 precedence left PLUS, MINUS;
-precedence left TIMES, DIVIDE, MOD;
-precedence right NOT;
-precedence right UMINUS;
+precedence left MULTIPLY, DIVIDE;
 
-/* Símbolo inicial */
-start with program;
+// Regla inicial
+start with Program;
 
-/* Producciones */
+// Reglas de producción
+Program ::= ClassDeclaration
+           {: System.out.println("Program -> ClassDeclaration"); :}
+           | error
+           {: System.err.println("Syntax error in Program"); :}
+           ;
 
-/* Programa */
-program ::= class_declaration_list
-          | function_decl_list;
+ClassDeclaration ::= CLASS ID LBRACE BodyDeclarations RBRACE
+                   {: System.out.println("ClassDeclaration -> CLASS ID LBRACE BodyDeclarations RBRACE"); :}
+                   ;
 
-/* Lista de declaraciones de clase */
-class_declaration_list ::= class_declaration_list class_declaration
-                         | class_declaration;
+BodyDeclarations ::= FieldDeclaration
+                   {: System.out.println("BodyDeclarations -> FieldDeclaration"); :}
+                   | MethodDeclaration
+                   {: System.out.println("BodyDeclarations -> MethodDeclaration"); :}
+                   | BodyDeclarations FieldDeclaration
+                   {: System.out.println("BodyDeclarations -> BodyDeclarations FieldDeclaration"); :}
+                   | BodyDeclarations MethodDeclaration
+                   {: System.out.println("BodyDeclarations -> BodyDeclarations MethodDeclaration"); :}
+                   ;
 
-/* Declaración de clase */
-class_declaration ::= CLASS ID LBRACE class_body_member_list RBRACE;
+FieldDeclaration ::= Type ID SEMICOLON
+                   {: System.out.println("FieldDeclaration -> Type ID SEMICOLON"); :}
+                   ;
 
-/* Miembros del cuerpo de la clase */
-class_body_member_list ::= class_body_member_list class_body_member
-                         | class_body_member
-                         | /* vacío */;
+MethodDeclaration ::= Type ID LPAREN FormalParameters RPAREN Block
+                   {: System.out.println("MethodDeclaration -> Type ID LPAREN FormalParameters RPAREN Block"); :}
+                   ;
 
-/* Miembro del cuerpo de la clase (variable o método) */
-class_body_member ::= variable_member
-                    | method_member;
+// Declaración de declaraciones de parámetros formales para métodos
+FormalParameters ::= /* empty */
+                   {: System.out.println("FormalParameters -> empty"); :}
+                   | Type ID
+                   {: System.out.println("FormalParameters -> Type ID"); :}
+                   | FormalParameters COMMA Type ID
+                   {: System.out.println("FormalParameters -> FormalParameters COMMA Type ID"); :}
+                   ;
 
-/* Declaración de miembro de variable */
-variable_member ::= access_modifier type id_with_optional_array assign_opt SEMI;
+// Bloques
+Block ::= LBRACE Statement RBRACE
+         {: System.out.println("Block -> LBRACE Statement RBRACE"); :}
+         ;
 
-/* Declaración de método */
-method_member ::= access_modifier VOID ID method_decl_rest SEMI;
+// Declaraciones de Statements
+Statement ::= Type Identifier ASSIGN Expression
+            {: System.out.println("Statement -> Type Identifier ASSIGN Expression"); :}
+            | IF LPAREN Expression RPAREN Statement
+            {: System.out.println("Statement -> IF LPAREN Expression RPAREN Statement"); :} %prec ELSE
+            | IF LPAREN Expression RPAREN Statement ELSE Statement
+            {: System.out.println("Statement -> IF LPAREN Expression RPAREN Statement ELSE Statement"); :}
+            | WHILE LPAREN Expression RPAREN Statement
+            {: System.out.println("Statement -> WHILE LPAREN Expression RPAREN Statement"); :}
+            | RETURN Expression
+            {: System.out.println("Statement -> RETURN Expression"); :}
+            | error
+            {: System.err.println("Syntax error in Statement"); :}
+            ;
 
-/* Declaración de método */
-method_decl_rest ::= LPAREN param_list RPAREN block;
+// Reglas de producción para las Expresiones
+Expression ::= Expression PLUS Term
+             {: System.out.println("Expression -> Expression PLUS Term"); :}
+             | Expression MINUS Term
+             {: System.out.println("Expression -> Expression MINUS Term"); :}
+             | Term
+             {: System.out.println("Expression -> Term"); :}
+             | error
+             {: System.err.println("Syntax error in Expression"); :}
+             ;
 
-/* Identificador con arreglo opcional */
-id_with_optional_array ::= ID
-                         | ID LBRACKET RBRACKET;
+Term ::= Term MULTIPLY Factor
+       {: System.out.println("Term -> Term MULTIPLY Factor"); :}
+       | Term DIVIDE Factor
+       {: System.out.println("Term -> Term DIVIDE Factor"); :}
+       | Factor
+       {: System.out.println("Term -> Factor"); :}
+       ;
 
-/* Lista de parámetros */
-param_list ::= param_list COMMA type id_with_optional_array
-             | param
-             | /* vacío */;
+// Factores (valores individuales o sub-expresiones)
+Factor ::= LPAREN Expression RPAREN
+         {: System.out.println("Factor -> LPAREN Expression RPAREN"); :}
+         | INTLIT
+         {: System.out.println("Factor -> INTLIT"); :}
+         | FLOATLIT
+         {: System.out.println("Factor -> FLOATLIT"); :}
+         | STRINGLIT
+         {: System.out.println("Factor -> STRINGLIT"); :}
+         | Identifier
+         {: System.out.println("Factor -> Identifier"); :}
+         ;
 
 
-param ::= type id_with_optional_array;
+Identifier ::= ID
+             {: System.out.println("Identifier -> ID"); :}
+             ;
 
-
-/* Bloque de código */
-block ::= LBRACE var_decl_list statement_list RBRACE;
-
-/* Lista de declaraciones de variables locales */
-var_decl_list ::= var_decl_list var_decl
-                | /* vacío */;
-
-/* Declaración de variable local con asignación opcional */
-var_decl ::= type id_plus_array_list assign_opt SEMI;
-
-/* Asignación opcional para declaraciones de variables */
-assign_opt ::= ASSIGN expr
-             | /* vacío */;
-
-/* Lista de identificadores (variables locales) con arreglos opcionales */
-id_plus_array_list ::= id_plus_array_list COMMA id_with_optional_array
-                     | id_with_optional_array;
-
-/* Lista de sentencias */
-statement_list ::= statement_list statement
-                 | /* vacío */;
-
-/* Sentencias */
-statement ::= location assign_op expr SEMI
-            | method_call SEMI
-            | IF LPAREN expr RPAREN block ELSE block
-            | IF LPAREN expr RPAREN block
-            | WHILE LPAREN expr RPAREN block
-            | FOR LPAREN for_init_expr SEMI expr_opt SEMI for_update_expr RPAREN block
-            | RETURN expr_opt SEMI
-            | BREAK SEMI
-            | CONTINUE SEMI
-            | block;
-            
-
-/* Expresión opcional */
-expr_opt ::= expr
-           | /* vacío */;
-
-/* Inicialización del for */
-for_init_expr ::= type id_with_optional_array assign_op expr
-                | assign_expr
-                | /* vacío */;
-
-/* Actualización del for */
-for_update_expr ::= assign_expr
-                  | expr
-                  | /* vacío */;
-
-/* Expresión de asignación */
-assign_expr ::= location assign_op expr;
-
-/* Operadores de asignación */
-assign_op ::= ASSIGN
-            | PLUS_ASSIGN
-            | MINUS_ASSIGN;
-
-/* Ubicación (variable o arreglo) */
-location ::= ID
-           | ID LBRACKET expr RBRACKET;
-
-/* Llamada a método */
-method_call ::= method_name LPAREN expr_plus_list_opt RPAREN
-              | CALLOUT LPAREN STRING_LITERAL opt_comma_callout_arg_list RPAREN;
-
-/* Lista opcional de argumentos para callout */
-opt_comma_callout_arg_list ::= callout_arg_list
-                             | /* vacío */;
-
-/* Nombre del método */
-method_name ::= ID;
-
-/* Lista opcional de expresiones */
-expr_plus_list_opt ::= expr_plus_list
-                     | /* vacío */;
-
-/* Lista de expresiones separadas por comas */
-expr_plus_list ::= expr_plus_list COMMA expr
-                 | expr;
-
-/* Lista de argumentos para callout */
-callout_arg_list ::= callout_arg_list COMMA callout_arg
-                   | callout_arg;
-
-/* Argumento para callout */
-callout_arg ::= expr
-              | STRING_LITERAL;
-
-/* Expresiones */
-expr ::= location
-       | method_call
-       | literal
-       | expr bin_op expr
-       | MINUS expr %prec UMINUS
-       | NOT expr
-       | NEW type LBRACKET expr RBRACKET
-       | LPAREN expr RPAREN
-       | THIS   /* Soporte para "this" */
-       | NULL;  /* Soporte para "null" */
-
-/* Operadores binarios */
-bin_op ::= arith_op
-         | rel_op
-         | eq_op
-         | cond_op;
-
-/* Operadores aritméticos */
-arith_op ::= PLUS | MINUS | TIMES | DIVIDE | MOD;
-
-/* Operadores relacionales */
-rel_op ::= LT | GT | LE | GE;
-
-/* Operadores de igualdad */
-eq_op ::= EQ | NEQ;
-
-/* Operadores condicionales */
-cond_op ::= AND | OR;
-
-/* Literales */
-literal ::= int_literal
-          | char_literal
-          | bool_literal;  
-
-/* Literal entero */
-int_literal ::= INT_LITERAL;
-
-/* Literal de carácter */
-char_literal ::= CHAR_LITERAL;
-
-/* Literal booleano */
-bool_literal ::= TRUE
-               | FALSE;
-
-/* Declaraciones de funciones */
-function_decl_list ::= function_decl_list function_decl
-                     | function_decl;
-
-function_decl ::= DEF type ID LPAREN param_list RPAREN block;
-
-/* Tipos de datos */
-type ::= INT
+// Tipos de datos
+Type ::= INT
+       {: System.out.println("Type -> INT"); :}
+       | FLOAT
+       {: System.out.println("Type -> FLOAT"); :}
        | BOOLEAN
-       | CHAR;
+       {: System.out.println("Type -> BOOLEAN"); :}
+       | VOID
+       {: System.out.println("Type -> VOID"); :}
+       ;

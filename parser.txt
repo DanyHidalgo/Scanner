@@ -1,0 +1,18 @@
+Type -> BOOLEAN
+FieldDeclaration -> Type ID SEMICOLON
+BodyDeclarations -> FieldDeclaration
+Type -> INT
+FieldDeclaration -> Type ID SEMICOLON
+BodyDeclarations -> BodyDeclarations FieldDeclaration
+Type -> INT
+Type -> INT
+FormalParameters -> Type ID
+Type -> INT
+FormalParameters -> FormalParameters COMMA Type ID
+Type -> INT
+instead expected token classes are []
+Block -> LBRACE Statement RBRACE
+MethodDeclaration -> Type ID LPAREN FormalParameters RPAREN Block
+BodyDeclarations -> BodyDeclarations MethodDeclaration
+ClassDeclaration -> CLASS ID LBRACE BodyDeclarations RBRACE
+Program -> ClassDeclaration
