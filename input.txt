@@ -8,7 +8,8 @@ class Program {
         return res;
     }
     void main(){
-        int resultado1, resultado2;
+        int resultado1;
+        int resultado2;
         boolean resultado3;
         entrada = true;
 
@@ -17,9 +18,9 @@ class Program {
         }
         entrada = false;
         if (entrada == true){
-            resultado1 = resta(3,2);
+            resultado1 = suma(3,2);
             
-            @
+            
             //Este es un comentario
             /* este es un comentario
             y esto tambien 

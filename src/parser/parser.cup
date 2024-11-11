@@ -7,122 +7,145 @@ import java_cup.runtime.*;
 // Declaraciones de símbolos (terminales)
 terminal CLASS, ID, IF, ELSE, WHILE, RETURN, INT, BOOLEAN, FLOAT, VOID;
 terminal PLUS, MINUS, MULTIPLY, DIVIDE, ASSIGN, LESS_THAN, GREATER_THAN, LESS_THAN_EQUALS, GREATER_THAN_EQUALS, EQUALS_EQUALS, NOT_EQUALS, SEMICOLON;
-terminal LPAREN, RPAREN, LBRACE, RBRACE, COMMA, INTLIT, FLOATLIT, STRINGLIT, TRUE, FALSE, ERROR,TIMES,NUMBER,NOT, AND,OR;
+terminal LPAREN, RPAREN, LBRACE, RBRACE, COMMA, INTLIT, FLOATLIT, STRINGLIT, TRUE, FALSE, ERROR, NUMBER, TIMES, NOT, AND, OR, BREAK, CONTINUE, CALLOUT;
 
 // Declaraciones de no terminales
-non terminal Program, ClassDeclaration, BodyDeclarations, FieldDeclaration, MethodDeclaration;
-non terminal Statement, Expression, Term, Factor, Identifier, Type, FormalParameters, Block;
+non terminal Program, FieldDecl, MethodDecl, Block, VarDecl, Type, FieldDecls, CalloutArgs, FieldDeclList;
+non terminal Statement, Expr, Location, AssignOp, MethodCall, CalloutArg, MethodDecls;
+non terminal BinOp, ArithOp, RelOp, EqOp, CondOp, Literal, Identifier, VarDecls;
+non terminal FormalParameters, FormalParameter, MethodName, Alpha, Digit, AlphaNum, Statements;
+
 
 // Precedencia
 precedence right ELSE;
 precedence left PLUS, MINUS;
 precedence left MULTIPLY, DIVIDE;
+precedence right NOT;
+precedence left AND, OR;
+precedence left LESS_THAN, GREATER_THAN, LESS_THAN_EQUALS, GREATER_THAN_EQUALS;
+precedence left EQUALS_EQUALS, NOT_EQUALS;
+
+
 
 // Regla inicial
 start with Program;
 
 // Reglas de producción
-Program ::= ClassDeclaration
-           {: System.out.println("Program -> ClassDeclaration"); :}
-           | error
-           {: System.err.println("Syntax error in Program"); :}
+Program ::= CLASS ID LBRACE FieldDecls MethodDecls RBRACE
+           {: System.out.println("Program -> class Program { FieldDecls MethodDecls }"); :}
            ;
 
-ClassDeclaration ::= CLASS ID LBRACE BodyDeclarations RBRACE
-                   {: System.out.println("ClassDeclaration -> CLASS ID LBRACE BodyDeclarations RBRACE"); :}
-                   ;
+FieldDecls ::= /* vacío */
+             | FieldDecls FieldDecl
+             ;
 
-BodyDeclarations ::= FieldDeclaration
-                   {: System.out.println("BodyDeclarations -> FieldDeclaration"); :}
-                   | MethodDeclaration
-                   {: System.out.println("BodyDeclarations -> MethodDeclaration"); :}
-                   | BodyDeclarations FieldDeclaration
-                   {: System.out.println("BodyDeclarations -> BodyDeclarations FieldDeclaration"); :}
-                   | BodyDeclarations MethodDeclaration
-                   {: System.out.println("BodyDeclarations -> BodyDeclarations MethodDeclaration"); :}
-                   ;
+FieldDeclList ::= FieldDecl
+                | FieldDeclList FieldDecl
+                ;
 
-FieldDeclaration ::= Type ID SEMICOLON
-                   {: System.out.println("FieldDeclaration -> Type ID SEMICOLON"); :}
-                   ;
-
-MethodDeclaration ::= Type ID LPAREN FormalParameters RPAREN Block
-                   {: System.out.println("MethodDeclaration -> Type ID LPAREN FormalParameters RPAREN Block"); :}
-                   ;
-
-// Declaración de declaraciones de parámetros formales para métodos
-FormalParameters ::= /* empty */
-                   {: System.out.println("FormalParameters -> empty"); :}
-                   | Type ID
-                   {: System.out.println("FormalParameters -> Type ID"); :}
-                   | FormalParameters COMMA Type ID
-                   {: System.out.println("FormalParameters -> FormalParameters COMMA Type ID"); :}
-                   ;
-
-// Bloques
-Block ::= LBRACE Statement RBRACE
-         {: System.out.println("Block -> LBRACE Statement RBRACE"); :}
-         ;
-
-// Declaraciones de Statements
-Statement ::= Type Identifier ASSIGN Expression
-            {: System.out.println("Statement -> Type Identifier ASSIGN Expression"); :}
-            | IF LPAREN Expression RPAREN Statement
-            {: System.out.println("Statement -> IF LPAREN Expression RPAREN Statement"); :} %prec ELSE
-            | IF LPAREN Expression RPAREN Statement ELSE Statement
-            {: System.out.println("Statement -> IF LPAREN Expression RPAREN Statement ELSE Statement"); :}
-            | WHILE LPAREN Expression RPAREN Statement
-            {: System.out.println("Statement -> WHILE LPAREN Expression RPAREN Statement"); :}
-            | RETURN Expression
-            {: System.out.println("Statement -> RETURN Expression"); :}
-            | error
-            {: System.err.println("Syntax error in Statement"); :}
+FieldDecl ::= Type ID SEMICOLON
+            {: System.out.println("FieldDecl -> Type ID ;"); :}
+            | Type ID LBRACE INTLIT RBRACE SEMICOLON
+            {: System.out.println("FieldDecl -> Type ID [INTLIT] ;"); :}
             ;
 
-// Reglas de producción para las Expresiones
-Expression ::= Expression PLUS Term
-             {: System.out.println("Expression -> Expression PLUS Term"); :}
-             | Expression MINUS Term
-             {: System.out.println("Expression -> Expression MINUS Term"); :}
-             | Term
-             {: System.out.println("Expression -> Term"); :}
-             | error
-             {: System.err.println("Syntax error in Expression"); :}
+FormalParameters ::= /* vacío */
+                   | FormalParameter
+                   | FormalParameters COMMA FormalParameter
+                   ;
+
+FormalParameter ::= Type ID
+                  ;
+
+
+MethodDecls ::= MethodDecl
+              | MethodDecls MethodDecl
+              ;
+
+MethodDecl ::= Type ID LPAREN FormalParameters RPAREN Block
+             {: System.out.println("MethodDecl -> Type ID (FormalParameters) Block"); :}
+             | VOID ID LPAREN FormalParameters RPAREN Block
+             {: System.out.println("MethodDecl -> void ID (FormalParameters) Block"); :}
              ;
 
-Term ::= Term MULTIPLY Factor
-       {: System.out.println("Term -> Term MULTIPLY Factor"); :}
-       | Term DIVIDE Factor
-       {: System.out.println("Term -> Term DIVIDE Factor"); :}
-       | Factor
-       {: System.out.println("Term -> Factor"); :}
-       ;
+Block ::= LBRACE VarDecls Statements RBRACE
+        {: System.out.println("Block -> { VarDecls Statements }"); :}
+        ;
 
-// Factores (valores individuales o sub-expresiones)
-Factor ::= LPAREN Expression RPAREN
-         {: System.out.println("Factor -> LPAREN Expression RPAREN"); :}
-         | INTLIT
-         {: System.out.println("Factor -> INTLIT"); :}
-         | FLOATLIT
-         {: System.out.println("Factor -> FLOATLIT"); :}
-         | STRINGLIT
-         {: System.out.println("Factor -> STRINGLIT"); :}
-         | Identifier
-         {: System.out.println("Factor -> Identifier"); :}
-         ;
+VarDecls ::= /* empty */
+           | VarDecl VarDecls
+           ;
 
+VarDecl ::= Type ID SEMICOLON
+          {: System.out.println("VarDecl -> Type ID ;"); :}
+          ;
 
-Identifier ::= ID
-             {: System.out.println("Identifier -> ID"); :}
-             ;
-
-// Tipos de datos
 Type ::= INT
-       {: System.out.println("Type -> INT"); :}
-       | FLOAT
-       {: System.out.println("Type -> FLOAT"); :}
        | BOOLEAN
-       {: System.out.println("Type -> BOOLEAN"); :}
-       | VOID
-       {: System.out.println("Type -> VOID"); :}
        ;
+
+Statements ::= Statement
+             | Statements Statement
+             ;
+
+Statement ::= Location AssignOp Expr SEMICOLON
+            {: System.out.println("Asignación exitosa: "); :}
+            | MethodCall SEMICOLON
+            | IF LPAREN Expr RPAREN Block
+            | IF LPAREN Expr RPAREN Block ELSE Block
+            | WHILE LPAREN Expr RPAREN Block
+            | RETURN Expr SEMICOLON
+            | BREAK SEMICOLON
+            | CONTINUE SEMICOLON
+            | Block
+            ;
+
+Location ::= ID
+           | ID LBRACE Expr RBRACE
+           ;
+
+AssignOp ::= ASSIGN
+           | TIMES
+           | PLUS
+           | MINUS
+           ;
+
+MethodCall ::= MethodName LPAREN CalloutArgs RPAREN
+             | CALLOUT LPAREN STRINGLIT CalloutArgs RPAREN
+             ;
+
+MethodName ::= ID;
+
+CalloutArgs ::= /* empty */
+              | CalloutArg
+              | CalloutArgs COMMA CalloutArg
+              ;
+
+CalloutArg ::= Expr;
+
+Expr ::= Location
+       | MethodCall
+       | Literal
+       | Expr PLUS Expr
+       | Expr MINUS Expr
+       | Expr MULTIPLY Expr
+       | Expr DIVIDE Expr
+       | Expr LESS_THAN Expr
+       | Expr GREATER_THAN Expr
+       | Expr LESS_THAN_EQUALS Expr
+       | Expr GREATER_THAN_EQUALS Expr
+       | Expr EQUALS_EQUALS Expr
+       | Location EQUALS_EQUALS Literal
+       | Expr NOT_EQUALS Expr
+       | Expr AND Expr
+       | Expr OR Expr
+       | MINUS Expr %prec MINUS
+       | NOT Expr %prec NOT
+       | LPAREN Expr RPAREN
+       ;
+
+Literal ::= NUMBER
+          | TRUE
+          | FALSE
+          | STRINGLIT
+          ;

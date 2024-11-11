@@ -1,18 +1,18 @@
-Type -> BOOLEAN
-FieldDeclaration -> Type ID SEMICOLON
-BodyDeclarations -> FieldDeclaration
-Type -> INT
-FieldDeclaration -> Type ID SEMICOLON
-BodyDeclarations -> BodyDeclarations FieldDeclaration
-Type -> INT
-Type -> INT
-FormalParameters -> Type ID
-Type -> INT
-FormalParameters -> FormalParameters COMMA Type ID
-Type -> INT
-instead expected token classes are []
-Block -> LBRACE Statement RBRACE
-MethodDeclaration -> Type ID LPAREN FormalParameters RPAREN Block
-BodyDeclarations -> BodyDeclarations MethodDeclaration
-ClassDeclaration -> CLASS ID LBRACE BodyDeclarations RBRACE
-Program -> ClassDeclaration
+FieldDecl -> Type ID ;
+FieldDecl -> Type ID ;
+VarDecl -> Type ID ;
+Asignación exitosa: 
+Block -> { VarDecls Statements }
+MethodDecl -> Type ID (FormalParameters) Block
+VarDecl -> Type ID ;
+VarDecl -> Type ID ;
+VarDecl -> Type ID ;
+Asignación exitosa: 
+Asignación exitosa: 
+Block -> { VarDecls Statements }
+Asignación exitosa: 
+Asignación exitosa: 
+Block -> { VarDecls Statements }
+Block -> { VarDecls Statements }
+MethodDecl -> void ID (FormalParameters) Block
+Program -> class Program { FieldDecls MethodDecls }

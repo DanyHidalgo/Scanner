@@ -10,6 +10,7 @@ public class sym {
   /* terminals */
   public static final int DIVIDE = 15;
   public static final int STRINGLIT = 31;
+  public static final int CONTINUE = 41;
   public static final int LPAREN = 24;
   public static final int INT = 8;
   public static final int MINUS = 13;
@@ -19,6 +20,7 @@ public class sym {
   public static final int NOT = 37;
   public static final int SEMICOLON = 23;
   public static final int INTLIT = 29;
+  public static final int CALLOUT = 42;
   public static final int OR = 39;
   public static final int COMMA = 28;
   public static final int CLASS = 2;
@@ -32,11 +34,12 @@ public class sym {
   public static final int RETURN = 7;
   public static final int TRUE = 32;
   public static final int error = 1;
-  public static final int NUMBER = 36;
+  public static final int NUMBER = 35;
+  public static final int BREAK = 40;
   public static final int VOID = 11;
   public static final int FLOATLIT = 30;
   public static final int ERROR = 34;
-  public static final int TIMES = 35;
+  public static final int TIMES = 36;
   public static final int LBRACE = 26;
   public static final int ELSE = 5;
   public static final int WHILE = 6;
@@ -84,11 +87,14 @@ public class sym {
   "TRUE",
   "FALSE",
   "ERROR",
-  "TIMES",
   "NUMBER",
+  "TIMES",
   "NOT",
   "AND",
-  "OR"
+  "OR",
+  "BREAK",
+  "CONTINUE",
+  "CALLOUT"
   };
 }
 

@@ -38,6 +38,10 @@ ALPHANUM=[a-zA-Z0-9]
 "class"     { return new Symbol(sym.CLASS, yyline+1, yycolumn+1, "class");  }
 "true"      { return new Symbol(sym.TRUE, yyline+1, yycolumn+1, "true"); }
 "false"     { return new Symbol(sym.FALSE, yyline+1, yycolumn+1, "false"); }
+"void"     { return new Symbol(sym.VOID, yyline+1, yycolumn+1, "void"); }
+"break"     { return new Symbol(sym.BREAK, yyline+1, yycolumn+1, "break"); }
+"continue"     { return new Symbol(sym.CONTINUE, yyline+1, yycolumn+1, "continue"); }
+"callout"     { return new Symbol(sym.CALLOUT, yyline+1, yycolumn+1, "callout"); }
 
 /* Operadores y símbolos */
 "=="        { return new Symbol(sym.EQUALS_EQUALS, yyline+1, yycolumn+1, "=="); }
