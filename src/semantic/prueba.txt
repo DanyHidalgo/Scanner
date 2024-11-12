@@ -38,7 +38,7 @@ start with Program;
 Program ::= CLASS ID:id LBRACE FieldDecls:fd MethodDecls:md RBRACE
            {: 
                System.out.println("Program -> class Program { FieldDecls MethodDecls }");
-               RESULT = new ProgramNode(id.toString(), (List<ASTNode>)fd, (List<ASTNode>)md);
+               RESULT = new ProgramNode(id.toString(), fd, md);
            :}
            ;
 
@@ -48,18 +48,12 @@ FieldDecls ::= /* vacío */
                  System.out.println("FieldDecls -> vacío");
                  RESULT = new FieldDeclsNode(new ArrayList<ASTNode>());
              :}
-           | FieldDecls FieldDecl:fd
+             | FieldDecls FieldDecl:fd
              {: 
                  System.out.println("FieldDecls -> FieldDecl FieldDecls");
-                 // Verificar que RESULT es una instancia de FieldDeclsNode
-                 if (RESULT == null) {
-                     RESULT = new FieldDeclsNode(new ArrayList<ASTNode>());
-                 }
                  ((FieldDeclsNode)RESULT).getFieldDecls().add(fd); 
              :}
-           ;
-
-
+             ;
 
 FieldDeclList ::= FieldDecl:fd
                 {: 
@@ -76,15 +70,14 @@ FieldDeclList ::= FieldDecl:fd
                 ;
 
 
-
 FieldDecl ::= Type:type ID:id SEMICOLON
             {: 
                 System.out.println("FieldDecl -> Type ID ;");
                 RESULT = new FieldDeclNode(type.toString(), id.toString());
             :}
-            | Type:type ID:id LBRACE NUMBER:size RBRACE SEMICOLON
+            | Type:type ID:id LBRACE INTLIT:size RBRACE SEMICOLON
             {: 
-                System.out.println("FieldDecl -> Type ID [NUMBER] ;");
+                System.out.println("FieldDecl -> Type ID [INTLIT] ;");
                 RESULT = new FieldDeclNode(type.toString(), id.toString(), new LiteralNode(size.toString()));
             :}
             ;
@@ -109,7 +102,6 @@ FormalParameters ::= /* vacío */
                    :}
                    ;
 
-
 // Para la regla FormalParameter
 FormalParameter ::= Type:type ID:id
                   {: 
@@ -120,6 +112,7 @@ FormalParameter ::= Type:type ID:id
 
 
 
+// Para la regla MethodDecls
 MethodDecls ::= MethodDecl:md
               {: 
                   System.out.println("MethodDecls -> MethodDecl");
@@ -134,7 +127,7 @@ MethodDecls ::= MethodDecl:md
               :}
               ;
 
-
+// Para la regla MethodDecl
 MethodDecl ::= Type:type ID:id LPAREN FormalParameters:fp RPAREN Block:block
              {: 
                  System.out.println("MethodDecl -> Type ID (FormalParameters) Block");
@@ -148,13 +141,13 @@ MethodDecl ::= Type:type ID:id LPAREN FormalParameters:fp RPAREN Block:block
              ;
 
 
+// Para la regla Block
 Block ::= LBRACE VarDecls:v Statements:s RBRACE
         {: 
             System.out.println("Block -> { VarDecls Statements }");
             RESULT = new BlockNode(v, s);
         :}
         ;
-
 
 
 VarDecls ::= /* empty */
@@ -192,6 +185,7 @@ Type ::= INT
        ;
 
 
+// Para la regla Statements
 Statements ::= Statement:s
              {: 
                  System.out.println("Statements -> Statement");
@@ -205,7 +199,6 @@ Statements ::= Statement:s
                  RESULT = new StatementsNode(stmtList);
              :}
              ;
-
 
 // Para la regla Statement (y subreglas)
 Statement ::= Location:l AssignOp:a Expr:e SEMICOLON

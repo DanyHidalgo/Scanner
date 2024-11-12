@@ -12,6 +12,7 @@ import java_cup.runtime.Symbol;
 import java.io.PrintWriter;
 import java.io.PrintStream;
 import java.io.File; // <-- Import the File class
+import ast.*;  // Importar las clases del AST
 
 public class Compiler {
 
@@ -28,6 +29,7 @@ public class Compiler {
         String debug = null;
         String outputFileName = "output.txt"; // Archivo de salida por defecto para el escaneo
         String outputParserFileName = "parser.txt"; // Archivo de salida por defecto para el parser
+        String outputAstFileName = "ast.dot"; // Archivo de salida para el AST en formato DOT
         String inputFileName = null;
 
         // Procesar los argumentos
@@ -83,16 +85,25 @@ public class Compiler {
             }
             // Ejecutar el parser si target es "parse"
             else if ("parse".equals(target)) {
-                // Create PrintStream for capturing parser output
+                // Crear PrintStream para capturar la salida del parser
                 PrintStream parserOutput = new PrintStream(new File(outputParserFileName)); // <-- Corrected this line
 
-                // Redirect System.out to write into output_parser.txt
+                // Redirigir System.out para escribir en output_parser.txt
                 System.setOut(parserOutput);
 
                 Parser parser = new Parser(scanner);
-                parser.parse(); // Ejecutar el análisis sintáctico
+                ProgramNode program = (ProgramNode) parser.parse().value; // Ejecutar el análisis sintáctico
 
-                // Close the parser output stream
+                // Ahora tenemos el AST como un objeto ProgramNode, por ejemplo.
+                // Escribimos el AST en formato DOT para Graphviz
+
+                try (BufferedWriter astWriter = new BufferedWriter(new FileWriter(outputAstFileName))) {
+                    astWriter.write("digraph AST {\n");
+                    program.generateDot(astWriter);  // Método que recorre y escribe el DOT de tu AST
+                    astWriter.write("}\n");
+                }
+
+                // Cerrar la salida del parser
                 parserOutput.close();
             }
 
