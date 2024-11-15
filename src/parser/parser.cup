@@ -1,463 +1,405 @@
-// Paquete
 package parser;
 
-// Importaciones necesarias
 import java_cup.runtime.*;
-import ast.*; 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-import semantic.Semantic;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import scanner.Scanner;
+import ast.*;
+import java.util.*;
 
+/* Terminales */
+terminal CLASS, LBRACE, RBRACE, SEMI, INT, BOOLEAN, CHAR, VOID;
+terminal IF, ELSE, FOR, WHILE, RETURN, BREAK, CONTINUE, CALLOUT;
+terminal ASSIGN, PLUS_ASSIGN, MINUS_ASSIGN, PLUS, MINUS, TIMES, DIVIDE;
+terminal MOD, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, TRUE, FALSE;
+terminal COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, NEW, UMINUS;
+terminal String ID, STRING_LITERAL, CHAR_LITERAL;
+terminal Integer INT_LITERAL, ERROR;
 
+/* No terminales */
+non terminal Program program;
+non terminal List<ClassBodyMember> class_body_member_list;
+non terminal ClassBodyMember class_body_member;
+non terminal List<Statement> statement_list;
+non terminal Statement statement;
+non terminal Block block;
+non terminal List<VarDecl> var_decl_list;
+non terminal List<VarDecl> var_decl;
+non terminal List<Variable> id_plus_array_list;
+non terminal Variable id_with_optional_array;
+non terminal Type type;
+non terminal List<Param> param_list;
+non terminal Param param;
+non terminal Location location;
+non terminal Expression expr, expr_opt;
+non terminal Expression assign_opt;
+non terminal String assign_op;
+non terminal MethodCall method_call;
+non terminal String method_name;
+non terminal List<Expression> expr_plus_list, expr_plus_list_opt;
+non terminal List<CalloutArg> opt_comma_callout_arg_list, callout_arg_list;
+non terminal CalloutArg callout_arg;
+non terminal Statement for_init_expr;
+non terminal Statement for_update_stmt; // Cambio realizado
+non terminal AssignExpr assign_expr;
+non terminal String bin_op, arith_op, rel_op, eq_op, cond_op;
+non terminal Literal literal;
+non terminal IntLiteral int_literal;
+non terminal CharLiteral char_literal;
+non terminal BoolLiteral bool_literal;
 
-// Declaraciones de símbolos (terminales)
-terminal CLASS, ID, IF, ELSE, WHILE, RETURN, INT, BOOLEAN, FLOAT, VOID;
-terminal PLUS, MINUS, MULTIPLY, DIVIDE, ASSIGN, LESS_THAN, GREATER_THAN, LESS_THAN_EQUALS, GREATER_THAN_EQUALS, EQUALS_EQUALS, NOT_EQUALS, SEMICOLON;
-terminal LPAREN, RPAREN, LBRACE, RBRACE, COMMA, INTLIT, FLOATLIT, STRINGLIT, TRUE, FALSE, ERROR, NUMBER, TIMES, NOT, AND, OR, BREAK, CONTINUE, CALLOUT;
-
-// Declaraciones de no terminales
-non terminal Program, FieldDecl, MethodDecl, Block, VarDecl, Type, FieldDecls, CalloutArgs, FieldDeclList;
-non terminal Statement, Expr, Location, AssignOp, MethodCall, CalloutArg, MethodDecls;
-non terminal BinOp, ArithOp, RelOp, EqOp, CondOp, Literal, Identifier, VarDecls;
-non terminal FormalParameters, FormalParameter, MethodName, Alpha, Digit, AlphaNum, Statements;
-
-
-// Precedencia
-precedence right ELSE;
+/* Precedencias */
+precedence left OR;
+precedence left AND;
+precedence nonassoc EQ, NEQ;
+precedence nonassoc LT, GT, LE, GE;
 precedence left PLUS, MINUS;
-precedence left MULTIPLY, DIVIDE;
+precedence left TIMES, DIVIDE, MOD;
 precedence right NOT;
-precedence left AND, OR;
-precedence left LESS_THAN, GREATER_THAN, LESS_THAN_EQUALS, GREATER_THAN_EQUALS;
-precedence left EQUALS_EQUALS, NOT_EQUALS;
+precedence right UMINUS;
 
+/* Símbolo inicial */
+start with program;
 
-
-// Regla inicial
-start with Program;
-
-Program ::= CLASS ID:id LBRACE FieldDecls:fd MethodDecls:md RBRACE
-           {: 
-               System.out.println("Program -> class Program { FieldDecls MethodDecls }");
-               RESULT = new ProgramNode(id.toString(), (List<ASTNode>)fd, (List<ASTNode>)md);
-           :}
-           ;
-
-
-FieldDecls ::= /* vacío */
-             {: 
-                 System.out.println("FieldDecls -> vacío");
-                 RESULT = new FieldDeclsNode(new ArrayList<ASTNode>());
-             :}
-           | FieldDecls FieldDecl:fd
-             {: 
-                 System.out.println("FieldDecls -> FieldDecl FieldDecls");
-                 // Verificar que RESULT es una instancia de FieldDeclsNode
-                 if (RESULT == null) {
-                     RESULT = new FieldDeclsNode(new ArrayList<ASTNode>());
-                 }
-                 ((FieldDeclsNode)RESULT).getFieldDecls().add(fd); 
-             :}
-           ;
-
-
-
-FieldDeclList ::= FieldDecl:fd
-                {: 
-                    System.out.println("FieldDeclList -> FieldDecl");
-                    RESULT = new FieldDeclListNode(Arrays.asList(fd)); 
-                :}
-                | FieldDeclList:fld FieldDecl:fd
-                {: 
-                    System.out.println("FieldDeclList -> FieldDeclList FieldDecl");
-                    List<ASTNode> fieldDecls = new ArrayList<>(((FieldDeclListNode)fld).getFieldDecls());
-                    fieldDecls.add(fd);
-                    RESULT = new FieldDeclListNode(fieldDecls);
-                :}
-                ;
-
-
-
-FieldDecl ::= Type:type ID:id SEMICOLON
-            {: 
-                System.out.println("FieldDecl -> Type ID ;");
-                RESULT = new FieldDeclNode(type.toString(), id.toString());
-            :}
-            | Type:type ID:id LBRACE NUMBER:size RBRACE SEMICOLON
-            {: 
-                System.out.println("FieldDecl -> Type ID [NUMBER] ;");
-                RESULT = new FieldDeclNode(type.toString(), id.toString(), new LiteralNode(size.toString()));
-            :}
-            ;
-
-
-FormalParameters ::= /* vacío */
-                   {: 
-                       System.out.println("FormalParameters -> vacío");
-                       RESULT = new FormalParametersNode(new ArrayList<ASTNode>());
-                   :}
-                   | FormalParameter:fp
-                   {: 
-                       System.out.println("FormalParameters -> FormalParameter");
-                       RESULT = new FormalParametersNode(Arrays.asList(fp));
-                   :}
-                   | FormalParameters:fpList COMMA FormalParameter:fp
-                   {: 
-                       System.out.println("FormalParameters -> FormalParameters , FormalParameter");
-                       List<ASTNode> params = new ArrayList<>(((FormalParametersNode)fpList).getFormalParameters());
-                       params.add(fp);
-                       RESULT = new FormalParametersNode(params);
-                   :}
-                   ;
-
-
-// Para la regla FormalParameter
-FormalParameter ::= Type:type ID:id
-                  {: 
-                      System.out.println("FormalParameter -> Type ID");
-                      RESULT = new FormalParameterNode(type.toString(), id.toString());
-                  :}
-                  ;
-
-
-
-MethodDecls ::= MethodDecl:md
-              {: 
-                  System.out.println("MethodDecls -> MethodDecl");
-                  RESULT = new MethodDeclsNode(Arrays.asList(md));
-              :}
-              | MethodDecls:mdList MethodDecl:md
-              {: 
-                  System.out.println("MethodDecls -> MethodDecls MethodDecl");
-                  List<ASTNode> methods = new ArrayList<>(((MethodDeclsNode)mdList).getMethodDecls());
-                  methods.add(md);
-                  RESULT = new MethodDeclsNode(methods);
-              :}
-              ;
-
-
-MethodDecl ::= Type:type ID:id LPAREN FormalParameters:fp RPAREN Block:block
-             {: 
-                 System.out.println("MethodDecl -> Type ID (FormalParameters) Block");
-                 RESULT = new MethodDeclNode(type.toString(), id.toString(), fp, block);
-             :}
-             | VOID:id ID:id LPAREN FormalParameters:fp RPAREN Block:block
-             {: 
-                 System.out.println("MethodDecl -> void ID (FormalParameters) Block");
-                 RESULT = new MethodDeclNode("void", id.toString(), fp, block);
-             :}
-             ;
-
-
-Block ::= LBRACE VarDecls:v Statements:s RBRACE
-        {: 
-            System.out.println("Block -> { VarDecls Statements }");
-            RESULT = new BlockNode(v, s);
-        :}
-        ;
-
-
-
-VarDecls ::= /* empty */
-           {: 
-               System.out.println("VarDecls -> /* empty */");
-               RESULT = new VarDeclsNode(new ArrayList<VarDeclNode>());
-           :}
-           | VarDecl:v VarDecls:vs
-           {: 
-               System.out.println("VarDecls -> VarDecl VarDecls");
-               List<VarDeclNode> varDeclList = new ArrayList<>(((VarDeclsNode)vs).getVarDecls());
-               varDeclList.add(v);
-               RESULT = new VarDeclsNode(varDeclList);
-           :}
-           ;
-
-VarDecl ::= Type:type ID:id SEMICOLON
-          {: 
-              System.out.println("VarDecl -> Type ID ;");
-              RESULT = new VarDeclNode(type.toString(), id.toString());
-          :}
+/* Reglas de la gramática */
+program ::= CLASS ID:id LBRACE class_body_member_list:cbml RBRACE
+          {: RESULT = new Program((String)id, cbml); :}
           ;
 
+class_body_member_list ::= class_body_member_list:cbml class_body_member:cbm
+                            {: cbml.add(cbm); RESULT = cbml; :}
+                          | /* vacío */
+                            {: RESULT = new ArrayList<>(); :}
+                          ;
 
-Type ::= INT
-       {: 
-           System.out.println("Type -> INT");
-           RESULT = new TypeNode("INT");
-       :}
-       | BOOLEAN
-       {: 
-           System.out.println("Type -> BOOLEAN");
-           RESULT = new TypeNode("BOOLEAN");
-       :}
-       ;
+class_body_member ::= type:t id_plus_array_list:vars SEMI
+                        {: 
+                            List<ClassBodyMember> members = new ArrayList<>();
+                            for (Variable var : vars) {
+                                members.add(new VarDecl(t, var.getName(), var.isArray(), null));
+                            }
+                            RESULT = new MultiVarDecl(members);
+                        :}
+                     | VOID ID:id LPAREN param_list:params RPAREN block:b
+                        {: RESULT = new MethodDecl(new VoidType(), (String)id, params, b); :}
+                     | type:t ID:id LPAREN param_list:params RPAREN block:b
+                        {: RESULT = new MethodDecl(t, (String)id, params, b); :}
+                     ;
 
+id_with_optional_array ::= ID:id
+                            {: RESULT = new Variable((String)id, false); :}
+                          | ID:id LBRACKET RBRACKET
+                            {: RESULT = new Variable((String)id, true); :}
+                          ;
 
-Statements ::= Statement:s
-             {: 
-                 System.out.println("Statements -> Statement");
-                 RESULT = new StatementsNode(java.util.Collections.singletonList(s));
-             :}
-             | Statements:ss Statement:s
-             {: 
-                 System.out.println("Statements -> Statements Statement");
-                 List<StatementNode> stmtList = new java.util.ArrayList<>(((StatementsNode)ss).getStatements());
-                 stmtList.add(s);
-                 RESULT = new StatementsNode(stmtList);
-             :}
+assign_opt ::= ASSIGN expr:e
+                 {: RESULT = e; :}
+               | /* vacío */
+                 {: RESULT = null; :}
+               ;
+
+param_list ::= param_list:pl COMMA param:p
+                 {: pl.add(p); RESULT = pl; :}
+               | param:p
+                 {: 
+                     List<Param> pl = new ArrayList<>();
+                     pl.add(p);
+                     RESULT = pl;
+                 :}
+               | /* vacío */
+                 {: RESULT = new ArrayList<>(); :}
+               ;
+
+param ::= type:t id_with_optional_array:var
+            {: RESULT = new Param(t, var.getName(), var.isArray()); :}
+          ;
+
+block ::= LBRACE var_decl_list:vars statement_list:stmts RBRACE
+            {: RESULT = new Block(vars, stmts); :}
+          ;
+
+var_decl_list ::= var_decl_list:vl var_decl:v
+                    {: vl.addAll(v); RESULT = vl; :}
+                  | /* vacío */
+                    {: RESULT = new ArrayList<>(); :}
+                  ;
+
+var_decl ::= type:t id_plus_array_list:vars assign_opt:aopt SEMI
+               {:
+                   List<VarDecl> varDecls = new ArrayList<>();
+                   for (Variable var : vars) {
+                       varDecls.add(new VarDecl(t, var.getName(), var.isArray(), aopt));
+                   }
+                   RESULT = varDecls;
+               :}
              ;
 
+id_plus_array_list ::= id_plus_array_list:vars COMMA id_with_optional_array:var
+                         {: vars.add(var); RESULT = vars; :}
+                       | id_with_optional_array:var
+                         {:
+                             List<Variable> vars = new ArrayList<>();
+                             vars.add(var);
+                             RESULT = vars;
+                         :}
+                       ;
 
-// Para la regla Statement (y subreglas)
-Statement ::= Location:l AssignOp:a Expr:e SEMICOLON
-            {: 
-                System.out.println("Asignación exitosa");
-                RESULT = new AssignmentNode(l, a, e);
-            :}
-            | MethodCall:m SEMICOLON
-            {: 
-                System.out.println("Método llamado: " + m);
-                RESULT = new MethodCallNode(m, new CalloutArgsNode());  // Llamada vacía para ahora
-            :}
-            | IF LPAREN Expr:cond RPAREN Block:b
-            {: 
-                System.out.println("If statement");
-                RESULT = new IfNode(cond, b, null);
-            :}
-            | IF LPAREN Expr:cond RPAREN Block:b ELSE Block:e
-            {: 
-                System.out.println("If-Else statement");
-                RESULT = new IfNode(cond, b, e);
-            :}
-            | WHILE LPAREN Expr:cond RPAREN Block:b
-            {: 
-                System.out.println("While statement");
-                RESULT = new WhileNode(cond, b);
-            :}
-            | RETURN Expr:e SEMICOLON
-            {: 
-                System.out.println("Return statement");
-                RESULT = new ReturnNode(e);
-            :}
-            | BREAK SEMICOLON
-            {: 
-                System.out.println("Break statement");
-                RESULT = new BreakNode();
-            :}
-            | CONTINUE SEMICOLON
-            {: 
-                System.out.println("Continue statement");
-                RESULT = new ContinueNode();
-            :}
-            | Block:b
-            {: 
-                System.out.println("Block statement");
-                RESULT = b;
-            :}
-            ;
+statement_list ::= statement_list:sl statement:s
+                    {: sl.add(s); RESULT = sl; :}
+                  | /* vacío */
+                    {: RESULT = new ArrayList<>(); :}
+                  ;
 
-
-Location ::= ID:id
+statement ::= location:l assign_op:op expr:e SEMI
            {: 
-               System.out.println("Location -> ID");
-               RESULT = new LocationNode(id, null);  // Sin corchetes
+               System.out.println("Debug: Creando AssignStmt");
+               RESULT = new AssignStmt(l, op, e); 
            :}
-           | ID:id LBRACE Expr:e RBRACE
+         | method_call:mcall SEMI
            {: 
-               System.out.println("Location -> ID [Expr]");
-               RESULT = new LocationNode(id, e);  // Con corchetes
+               System.out.println("Debug: Creando MethodCallStmt");
+               RESULT = new MethodCallStmt(mcall); 
            :}
-           ;
-
-
-AssignOp ::= ASSIGN
+         | IF LPAREN expr:cond RPAREN block:then_block ELSE block:else_block
            {: 
-               System.out.println("AssignOp -> ASSIGN");
-               RESULT = new AssignOpNode("ASSIGN");
+               System.out.println("Debug: Creando IfStmt con else");
+               RESULT = new IfStmt(cond, then_block, else_block); 
            :}
-           | TIMES
+         | IF LPAREN expr:cond RPAREN block:then_block
            {: 
-               System.out.println("AssignOp -> TIMES");
-               RESULT = new AssignOpNode("TIMES");
+               System.out.println("Debug: Creando IfStmt sin else");
+               RESULT = new IfStmt(cond, then_block, null); 
            :}
-           | PLUS
+         | WHILE LPAREN expr:cond RPAREN block:body
            {: 
-               System.out.println("AssignOp -> PLUS");
-               RESULT = new AssignOpNode("PLUS");
+               System.out.println("Debug: Creando WhileStmt");
+               RESULT = new WhileStmt(cond, body); 
            :}
-           | MINUS
+         | FOR LPAREN for_init_expr:init SEMI expr_opt:cond SEMI for_update_stmt:update RPAREN block:body
            {: 
-               System.out.println("AssignOp -> MINUS");
-               RESULT = new AssignOpNode("MINUS");
+               System.out.println("Debug: Creando ForStmt");
+               RESULT = new ForStmt(init, cond, update, body); 
            :}
-           ;
-
-
-MethodCall ::= MethodName:m LPAREN CalloutArgs:ca RPAREN
-             {: 
-                 System.out.println("MethodCall -> MethodName (CalloutArgs)");
-                 RESULT = new MethodCallNode(m, ca);  // Llamada a método con sus argumentos
-             :}
-             | CALLOUT LPAREN STRINGLIT:s CalloutArgs:ca RPAREN
-             {: 
-                 System.out.println("MethodCall -> CALLOUT (STRINGLIT CalloutArgs)");
-                 RESULT = new MethodCallNode("CALLOUT " + s, ca);  // Llamada CALLOUT con argumentos
-             :}
-             ;
-
-MethodName ::= ID:id
-             {: 
-                 System.out.println("MethodName -> ID");
-                 RESULT = new MethodNameNode(id);  // Solo el nombre del método
-             :}
-             ;
-
-
-CalloutArgs ::= /* empty */
-              {: 
-                  System.out.println("CalloutArgs -> empty");
-                  RESULT = new CalloutArgsNode(new ArrayList<>());  // Lista vacía
-              :}
-              | CalloutArg:ca
-              {: 
-                  System.out.println("CalloutArgs -> CalloutArg");
-                  List<CalloutArgNode> list = new ArrayList<>();
-                  list.add(ca);  // Un solo argumento
-                  RESULT = new CalloutArgsNode(list);
-              :}
-              | CalloutArgs:ca COMMA CalloutArg:arg
-              {: 
-                  System.out.println("CalloutArgs -> CalloutArgs COMMA CalloutArg");
-                  List<CalloutArgNode> list = ((CalloutArgsNode) ca).getArgs();
-                  list.add(arg);  // Agrega el nuevo argumento a la lista
-                  RESULT = new CalloutArgsNode(list);
-              :}
-              ;
-
-CalloutArg ::= Expr:e
-             {: 
-                 System.out.println("CalloutArg -> Expr");
-                 RESULT = new CalloutArgNode(e);  // El argumento es una expresión
-             :}
-             ;
-
-Expr ::= Location:l
-       {: 
-           System.out.println("Expr -> Location");
-           RESULT = l;  // Location es una expresión
-       :}
-       | MethodCall:mc
-       {: 
-           System.out.println("Expr -> MethodCall");
-           RESULT = mc;  // MethodCall es una expresión
-       :}
-       | Literal:l
-       {: 
-           System.out.println("Expr -> Literal");
-           RESULT = l;  // Literal es una expresión
-       :}
-       | Expr:e1 PLUS Expr:e2
-       {: 
-           System.out.println("Expr -> Expr PLUS Expr");
-           RESULT = new BinaryOpNode(e1, e2, "+");
-       :}
-       | Expr:e1 MINUS Expr:e2
-       {: 
-           System.out.println("Expr -> Expr MINUS Expr");
-           RESULT = new BinaryOpNode(e1, e2, "-");
-       :}
-       | Expr:e1 MULTIPLY Expr:e2
-       {: 
-           System.out.println("Expr -> Expr MULTIPLY Expr");
-           RESULT = new BinaryOpNode(e1, e2, "*");
-       :}
-       | Expr:e1 DIVIDE Expr:e2
-       {: 
-           System.out.println("Expr -> Expr DIVIDE Expr");
-           RESULT = new BinaryOpNode(e1, e2, "/");
-       :}
-       | Expr:e1 LESS_THAN Expr:e2
-       {: 
-           System.out.println("Expr -> Expr LESS_THAN Expr");
-           RESULT = new BinaryOpNode(e1, e2, "<");
-       :}
-       | Expr:e1 GREATER_THAN Expr:e2
-       {: 
-           System.out.println("Expr -> Expr GREATER_THAN Expr");
-           RESULT = new BinaryOpNode(e1, e2, ">");
-       :}
-       | Expr:e1 LESS_THAN_EQUALS Expr:e2
-       {: 
-           System.out.println("Expr -> Expr LESS_THAN_EQUALS Expr");
-           RESULT = new BinaryOpNode(e1, e2, "<=");
-       :}
-       | Expr:e1 GREATER_THAN_EQUALS Expr:e2
-       {: 
-           System.out.println("Expr -> Expr GREATER_THAN_EQUALS Expr");
-           RESULT = new BinaryOpNode(e1, e2, ">=");
-       :}
-       | Expr:e1 EQUALS_EQUALS Expr:e2
-       {: 
-           System.out.println("Expr -> Expr EQUALS_EQUALS Expr");
-           RESULT = new BinaryOpNode(e1, e2, "==");
-       :}
-       | Location:l EQUALS_EQUALS Literal:r
-       {: 
-           System.out.println("Expr -> Location EQUALS_EQUALS Literal");
-           RESULT = new BinaryOpNode(l, r, "==");
-       :}
-       | Expr:e1 NOT_EQUALS Expr:e2
-       {: 
-           System.out.println("Expr -> Expr NOT_EQUALS Expr");
-           RESULT = new BinaryOpNode(e1, e2, "!=");
-       :}
-       | Expr:e1 AND Expr:e2
-       {: 
-           System.out.println("Expr -> Expr AND Expr");
-           RESULT = new BinaryOpNode(e1, e2, "&&");
-       :}
-       | Expr:e1 OR Expr:e2
-       {: 
-           System.out.println("Expr -> Expr OR Expr");
-           RESULT = new BinaryOpNode(e1, e2, "||");
-       :}
-       | MINUS Expr:e
-       {: 
-           System.out.println("Expr -> MINUS Expr");
-           RESULT = new UnaryOpNode(e, "-");
-       :}
-       | NOT Expr:e
-       {: 
-           System.out.println("Expr -> NOT Expr");
-           RESULT = new UnaryOpNode(e, "NOT");
-       :}
-       | LPAREN Expr:e RPAREN
-       {: 
-           System.out.println("Expr -> ( Expr )");
-           RESULT = new ParenExprNode(e);
-       :}
-       ;
-
-
-Literal ::= NUMBER:n
+         | RETURN expr_opt:eopt SEMI
            {: 
-               System.out.println("Literal -> NUMBER");
-               RESULT = new LiteralNode(String.valueOf(n)); 
+               System.out.println("Debug: Creando ReturnStmt");
+               RESULT = new ReturnStmt(eopt); 
            :}
-         | TRUE
+         | BREAK SEMI
            {: 
-               System.out.println("Literal -> TRUE");
-               RESULT = new LiteralNode("true"); 
+               System.out.println("Debug: Creando BreakStmt");
+               RESULT = new BreakStmt(); 
            :}
-         | FALSE
+         | CONTINUE SEMI
            {: 
-               System.out.println("Literal -> FALSE");
-               RESULT = new LiteralNode("false"); 
+               System.out.println("Debug: Creando ContinueStmt");
+               RESULT = new ContinueStmt(); 
            :}
-         | STRINGLIT:s
+         | block:b
            {: 
-               System.out.println("Literal -> STRINGLIT");
-               RESULT = new LiteralNode(s); 
+               System.out.println("Debug: Creando Block");
+               RESULT = b; 
            :}
          ;
+
+for_init_expr ::= type:t id_with_optional_array:var assign_op:op expr:e
+                   {:
+                       VarDecl varDecl = new VarDecl(t, var.getName(), var.isArray(), null);
+                       RESULT = new VarDeclStmt(varDecl, e);
+                   :}
+                 | assign_expr:aexpr
+                   {: RESULT = new ExprStmt(aexpr); :}
+                 | /* vacío */
+                   {: RESULT = null; :}
+                 ;
+
+expr_opt ::= expr:e
+              {: RESULT = e; :}
+           | /* vacío */
+              {: RESULT = null; :}
+           ;
+
+for_update_stmt ::= assign_expr:aexpr
+                   {: 
+                       System.out.println("Debug: Creando ExprStmt para for_update_stmt");
+                       RESULT = new ExprStmt(aexpr); 
+                   :}
+                 | expr:e
+                   {: 
+                       System.out.println("Debug: Creando ExprStmt para for_update_stmt con expr:e");
+                       RESULT = new ExprStmt(e); 
+                   :}
+                 | /* vacío */
+                   {: 
+                       System.out.println("Debug: Creando for_update_stmt como null");
+                       RESULT = null; 
+                   :}
+                 ;
+
+assign_expr ::= location:l assign_op:op expr:e
+                 {: RESULT = new AssignExpr(l, op, e); :}
+               ;
+
+assign_op ::= ASSIGN
+               {: RESULT = "="; :}
+             | PLUS_ASSIGN
+               {: RESULT = "+="; :}
+             | MINUS_ASSIGN
+               {: RESULT = "-="; :}
+             ;
+
+location ::= ID:id
+              {: RESULT = new VarLocation((String)id); :}
+            | ID:id LBRACKET expr:e RBRACKET
+              {: RESULT = new ArrayLocation((String)id, e); :}
+            ;
+
+method_call ::= method_name:name LPAREN expr_plus_list_opt:args RPAREN
+             {: 
+                 System.out.println("Debug: Creando MethodCall");
+                 RESULT = new MethodCall(name, args); 
+             :}
+           | CALLOUT LPAREN STRING_LITERAL:str opt_comma_callout_arg_list:args RPAREN
+             {: 
+                 System.out.println("Debug: Creando CalloutCall");
+                 RESULT = new CalloutCall((String) str, args); 
+             :}
+           ;
+
+method_name ::= ID:id
+                 {: RESULT = (String)id; :}
+               ;
+
+expr_plus_list_opt ::= expr_plus_list:el
+                        {: RESULT = el; :}
+                      | /* vacío */
+                        {: RESULT = new ArrayList<>(); :}
+                      ;
+
+expr_plus_list ::= expr_plus_list:el COMMA expr:e
+                    {: el.add(e); RESULT = el; :}
+                  | expr:e
+                    {:
+                        List<Expression> el = new ArrayList<>();
+                        el.add(e);
+                        RESULT = el;
+                    :}
+                  ;
+
+opt_comma_callout_arg_list ::= COMMA callout_arg_list:args
+                                {: RESULT = args; :}
+                              | /* vacío */
+                                {: RESULT = new ArrayList<>(); :}
+                              ;
+
+callout_arg_list ::= callout_arg_list:al COMMA callout_arg:a
+                       {: al.add(a); RESULT = al; :}
+                     | callout_arg:a
+                       {:
+                           List<CalloutArg> al = new ArrayList<>();
+                           al.add(a);
+                           RESULT = al;
+                       :}
+                     ;
+
+callout_arg ::= expr:e
+               {: RESULT = new ExprArg(e); :}
+             | STRING_LITERAL:str
+               {: RESULT = new StringArg((String)str); :}
+             ;
+
+expr ::= location:l
+           {: RESULT = l; :}
+         | method_call:mcall
+           {: RESULT = mcall; :}
+         | literal:l
+           {: RESULT = l; :}
+         | expr:e1 bin_op:op expr:e2
+           {: RESULT = new BinaryExpr(e1, op, e2); :}
+         | MINUS expr:e
+           {: RESULT = new UnaryExpr("-", e); :} %prec UMINUS
+         | NOT expr:e
+           {: RESULT = new UnaryExpr("!", e); :}
+         | NEW type:t LBRACKET expr:e RBRACKET
+           {: RESULT = new NewArrayExpr(t, e); :}
+         | LPAREN expr:e RPAREN
+           {: RESULT = e; :}
+         ;
+
+bin_op ::= arith_op:op
+            {: RESULT = op; :}
+          | rel_op:op
+            {: RESULT = op; :}
+          | eq_op:op
+            {: RESULT = op; :}
+          | cond_op:op
+            {: RESULT = op; :}
+          ;
+
+arith_op ::= PLUS
+              {: RESULT = "+"; :}
+            | MINUS
+              {: RESULT = "-"; :}
+            | TIMES
+              {: RESULT = "*"; :}
+            | DIVIDE
+              {: RESULT = "/"; :}
+            | MOD
+              {: RESULT = "%"; :}
+            ;
+
+rel_op ::= LT
+            {: RESULT = "<"; :}
+          | GT
+            {: RESULT = ">"; :}
+          | LE
+            {: RESULT = "<="; :}
+          | GE
+            {: RESULT = ">="; :}
+          ;
+
+eq_op ::= EQ
+           {: RESULT = "=="; :}
+         | NEQ
+           {: RESULT = "!="; :}
+         ;
+
+cond_op ::= AND
+           {: RESULT = "&&"; :}
+         | OR
+           {: RESULT = "||"; :}
+         ;
+
+literal ::= int_literal:i
+           {: RESULT = i; :}
+         | char_literal:c
+           {: RESULT = c; :}
+         | bool_literal:b
+           {: RESULT = b; :}
+         ;
+
+int_literal ::= INT_LITERAL:i
+    {: RESULT = new IntLiteral(i); :}
+    ;
+
+char_literal ::= CHAR_LITERAL:c
+                {: RESULT = new CharLiteral(((String)c).charAt(0)); :}
+              ;
+
+/* Literal booleano */
+bool_literal ::= TRUE
+                {: RESULT = new BoolLiteral(true); :}
+             | FALSE
+                {: RESULT = new BoolLiteral(false); :}
+             ;
+
+/* Tipos de datos */
+type ::= INT
+          {: RESULT = new IntType(); :}
+       | BOOLEAN
+          {: RESULT = new BooleanType(); :}
+       | CHAR
+          {: RESULT = new CharType(); :}
+       ;
