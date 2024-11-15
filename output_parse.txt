@@ -1,0 +1,3 @@
+stage: parsing
+Parsing completado con éxito.
+Análisis semántico completado sin errores.

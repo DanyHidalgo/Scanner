@@ -80,7 +80,7 @@ STRING_LITERAL = \" ( [^\"\\\n] | \\ [btnfr0\'\"\\] )* \"
 
 
 /* Literales */
-{DIGIT}+    { return new Symbol(sym.INT_LITERAL, yyline+1, yycolumn+1, yytext()); }
+{DIGIT}+    { return new Symbol(sym.INT_LITERAL, yyline+1, yycolumn+1, Integer.parseInt(yytext())); }
 {HEX_LITERAL}       { return new Symbol(sym.INT_LITERAL, yyline+1, yycolumn+1, yytext()); }
 
 {CHAR_LITERAL}      { return new Symbol(sym.CHAR_LITERAL, yyline+1, yycolumn+1, yytext()); }

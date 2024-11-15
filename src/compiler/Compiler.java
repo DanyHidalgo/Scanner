@@ -1,121 +1,362 @@
 package compiler;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import parser.Parser;
-import parser.sym;
 import scanner.Scanner;
+import parser.sym;
+import parser.Parser;
+import ast.Program;
+import ast.ASTPrinter;
+import ast.ASTDotGenerator;
+import semantic.SemanticAnalyzer;
 import java_cup.runtime.Symbol;
-import java.io.PrintWriter;
-import java.io.PrintStream;
-import java.io.File; // <-- Import the File class
-import ast.*;  // Importar las clases del AST
+
+import java.io.*;
+import java.util.List;
 
 public class Compiler {
 
     public static void main(String[] args) {
-        // Validar argumentos
-        if (args.length < 1) {
-            System.err.println(
-                    "Uso: java Compiler -target [scan|parse|ast|semantic|irt|codegen] -opt [constant|algebraic] -debug [scan:parse:etc] -o [outputfile] filename");
-            System.exit(1);
-        }
+        // Argumentos básicos del compilador
+        String filename = "";
+        String output = "output_scan.txt";
+        String target = "scan";
+        boolean debug = false;
 
-        String target = null;
-        String opt = null;
-        String debug = null;
-        String outputFileName = "output.txt"; // Archivo de salida por defecto para el escaneo
-        String outputParserFileName = "parser.txt"; // Archivo de salida por defecto para el parser
-        String outputAstFileName = "ast.dot"; // Archivo de salida para el AST en formato DOT
-        String inputFileName = null;
-
-        // Procesar los argumentos
+        // Procesar argumentos de entrada
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
-                case "-target":
-                    target = args[++i];
+                case "-o":
+                    if (i + 1 < args.length) {
+                        output = args[++i];
+                    } else {
+                        printArgumentError("-o");
+                    }
                     break;
-                case "-opt":
-                    opt = args[++i];
+                case "-target":
+                    if (i + 1 < args.length) {
+                        target = args[++i];
+                    } else {
+                        printArgumentError("-target");
+                    }
                     break;
                 case "-debug":
-                    debug = args[++i];
+                    debug = true;
                     break;
-                case "-o":
-                    outputFileName = args[++i];
+                case "-h":
+                    printHelp();
+                    System.exit(0);
                     break;
                 default:
-                    inputFileName = args[i];
-                    break;
+                    filename = args[i];
             }
         }
 
-        if (inputFileName == null) {
-            System.err.println("Debe proporcionar un archivo de entrada.");
+        // Validación de archivo de entrada
+        if (filename.isEmpty()) {
+            System.err.println("Error: No se especificó un archivo de entrada.");
+            printHelp();
             System.exit(1);
         }
 
+        // Ejecución principal del compilador
         try {
-            // Abrir archivo de entrada para leer
-            BufferedReader reader = new BufferedReader(new FileReader(inputFileName));
-            Scanner scanner = new Scanner(reader);
-
-            // Abrir archivo de salida para escribir los resultados
-            BufferedWriter writer = null;
-
-            // Escanear tokens si target es "scan"
-            if ("scan".equals(target)) {
-                writer = new BufferedWriter(new FileWriter(outputFileName));
-                Symbol token;
-                while ((token = scanner.next_token()) != null) {
-                    // Asegúrate de usar el sym correcto
-                    if (token.sym >= 0 && token.sym < sym.terminalNames.length) {
-                        String tokenName = sym.terminalNames[token.sym];
-                        String tokenValue = (token.value != null) ? token.value.toString() : "";
-                        writer.write("Token: " + tokenName + " " + tokenValue + ", Línea: " + token.left + ", Columna: "
-                                + token.right + "\n");
-                    } else {
-                        writer.write("Unknown token: " + token.sym + ", Línea: " + token.left + ", Columna: "
-                                + token.right + "\n");
-                    }
-                }
+            switch (target) {
+                case "scan":
+                    executeScan(filename, output, debug);
+                    break;
+                case "parse":
+                    executeParse(filename, output, debug);
+                    break;
+                case "ast":
+                    executeAST(filename, output, debug);
+                    break;
+                case "opt":
+                    executeOptimization(filename, output, debug);
+                    break;
+                case "codegen":
+                    executeCodeGen(filename, output, debug);
+                    break;
+                default:
+                    System.err.println("Error: Objetivo desconocido: " + target);
+                    printHelp();
+                    System.exit(1);
             }
-            // Ejecutar el parser si target es "parse"
-            else if ("parse".equals(target)) {
-                // Crear PrintStream para capturar la salida del parser
-                PrintStream parserOutput = new PrintStream(new File(outputParserFileName)); // <-- Corrected this line
-
-                // Redirigir System.out para escribir en output_parser.txt
-                System.setOut(parserOutput);
-
-                Parser parser = new Parser(scanner);
-                ProgramNode program = (ProgramNode) parser.parse().value; // Ejecutar el análisis sintáctico
-
-                // Ahora tenemos el AST como un objeto ProgramNode, por ejemplo.
-                // Escribimos el AST en formato DOT para Graphviz
-
-                try (BufferedWriter astWriter = new BufferedWriter(new FileWriter(outputAstFileName))) {
-                    astWriter.write("digraph AST {\n");
-                    program.generateDot(astWriter);  // Método que recorre y escribe el DOT de tu AST
-                    astWriter.write("}\n");
-                }
-
-                // Cerrar la salida del parser
-                parserOutput.close();
-            }
-
-            if (writer != null) {
-                writer.close();
-            }
-            reader.close();
         } catch (IOException e) {
-            System.err.println("Error manejando archivo: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Error durante el análisis sintáctico: " + e.getMessage());
+            handleIOException(e, debug);
+        }
+    }
+
+    /**
+     * Ejecuta la etapa de escaneo.
+     */
+    private static void executeScan(String filename, String output, boolean debug) throws IOException {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(output))) {
+            writer.println("stage: scanning");
+            System.out.println("stage: scanning");
+
+            Scanner scanner = new Scanner(new FileReader(filename));
+            while (!scanner.yyatEOF()) {
+                Symbol token = scanner.next_token();
+                if (token.sym == sym.EOF)
+                    break;
+
+                String tokenName = sym.terminalNames[token.sym];
+                String tokenValue = (token.value != null) ? token.value.toString() : "N/A";
+
+                writer.printf("Token: %s | Valor: %s | Línea: %d | Columna: %d%n",
+                        tokenName, tokenValue, token.left + 1, token.right + 1);
+
+                if (debug) {
+                    System.out.printf("Token: %s | Valor: %s | Línea: %d | Columna: %d%n",
+                            tokenName, tokenValue, token.left + 1, token.right + 1);
+                }
+            }
+        }
+        System.out.println("Escaneo completado. Resultados en " + output);
+    }
+
+    /**
+     * Ejecuta la etapa de parsing.
+     */
+
+    /*
+     * private static void executeParse(String filename, String output, boolean
+     * debug) throws IOException, Exception {
+     * try (PrintWriter writer = new PrintWriter(new FileWriter(output))) {
+     * writer.println("stage: parsing");
+     * System.out.println("stage: parsing");
+     * 
+     * Scanner scanner = new Scanner(new FileReader(filename));
+     * Parser parser = new Parser(scanner);
+     * Symbol result = parser.parse();
+     * 
+     * if (result == null || result.value == null) {
+     * writer.println("Error: No se pudo generar el AST.");
+     * if (debug) {
+     * System.err.println("Error: No se pudo generar el AST.");
+     * }
+     * return;
+     * }
+     * 
+     * Program program = (Program) result.value;
+     * writer.println("Parsing completado con éxito.");
+     * if (debug) {
+     * System.out.println("Parsing completado con éxito.");
+     * }
+     * 
+     * performSemanticAnalysis(program, writer, debug);
+     * }
+     * 
+     * System.out.println("Parsing completado. Resultados en " + output);
+     * }
+     */
+
+    private static void executeParse(String filename, String output, boolean debug) throws IOException {
+        // Validar que el archivo de entrada exista y sea legible
+        File inputFile = new File(filename);
+        if (!inputFile.exists() || !inputFile.canRead()) {
+            throw new IOException("El archivo de entrada no existe o no es legible: " + filename);
+        }
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(output))) {
+            writer.println("stage: parsing");
+            System.out.println("stage: parsing");
+
+            // Inicializar el escáner y el parser
+            Scanner scanner = new Scanner(new FileReader(inputFile));
+            Parser parser = new Parser(scanner);
+
+            try {
+                // Realizar el análisis sintáctico
+                Symbol result = parser.parse();
+                if (result == null || result.value == null) {
+                    writer.println("Error: No se pudo generar el AST.");
+                    if (debug) {
+                        System.err.println("Error: No se pudo generar el AST.");
+                    }
+                    return;
+                }
+
+                // Procesar el AST
+                Program program = (Program) result.value;
+                writer.println("Parsing completado con éxito.");
+                if (debug) {
+                    System.out.println("Parsing completado con éxito.");
+                }
+
+                // Realizar análisis semántico
+                performSemanticAnalysis(program, writer, debug);
+            } catch (Exception e) {
+                // Manejo de errores durante el parsing
+                writer.println("Error durante el análisis sintáctico: " + e.getMessage());
+                if (debug) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+        }
+
+        System.out.println("Parsing completado. Resultados en " + output);
+    }
+
+    /**
+     * Ejecuta la generación del AST.
+     */
+
+    /*
+     * private static void executeAST(String filename, String output, boolean debug)
+     * throws IOException, Exception {
+     * Scanner scanner = new Scanner(new FileReader(filename));
+     * Parser parser = new Parser(scanner);
+     * Symbol result = parser.parse();
+     * 
+     * if (result == null || !(result.value instanceof Program)) {
+     * System.err.println("Error: No se pudo generar el AST.");
+     * return;
+     * }
+     * 
+     * Program program = (Program) result.value;
+     * 
+     * try (PrintWriter dotWriter = new PrintWriter(new FileWriter(output))) {
+     * ASTDotGenerator dotGenerator = new ASTDotGenerator(dotWriter);
+     * dotGenerator.beginGraph();
+     * program.accept(dotGenerator);
+     * dotGenerator.endGraph();
+     * }
+     * 
+     * System.out.println("Archivo DOT generado en " + output);
+     * generatePDF(output, debug);
+     * }
+     */
+
+    private static void executeAST(String filename, String output, boolean debug) throws IOException {
+        // Validar que el archivo de entrada exista y sea legible
+        File inputFile = new File(filename);
+        if (!inputFile.exists() || !inputFile.canRead()) {
+            throw new IOException("El archivo de entrada no existe o no es legible: " + filename);
+        }
+
+        try (PrintWriter dotWriter = new PrintWriter(new FileWriter(output))) {
+            System.out.println("stage: AST generation");
+
+            // Inicializar el escáner y el parser
+            Scanner scanner = new Scanner(new FileReader(inputFile));
+            Parser parser = new Parser(scanner);
+
+            try {
+                // Realizar el análisis sintáctico
+                Symbol result = parser.parse();
+                if (result == null || !(result.value instanceof Program)) {
+                    System.err.println("Error: No se pudo generar el AST.");
+                    dotWriter.println("Error: No se pudo generar el AST.");
+                    return;
+                }
+
+                // Procesar el AST y generar el archivo DOT
+                Program program = (Program) result.value;
+                ASTDotGenerator dotGenerator = new ASTDotGenerator(dotWriter);
+                dotGenerator.beginGraph();
+                program.accept(dotGenerator);
+                dotGenerator.endGraph();
+
+                System.out.println("Archivo DOT generado en " + output);
+
+                // Generar PDF desde el archivo DOT
+                generatePDF(output, debug);
+            } catch (Exception e) {
+                // Manejo de errores durante el análisis o la generación del AST
+                dotWriter.println("Error durante la generación del AST: " + e.getMessage());
+                if (debug) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+        }
+    }
+
+    /**
+     * Realiza el análisis semántico.
+     */
+    private static void performSemanticAnalysis(Program program, PrintWriter writer, boolean debug) {
+        SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();
+        program.accept(semanticAnalyzer);
+
+        List<String> errors = semanticAnalyzer.getErrors();
+        if (!errors.isEmpty()) {
+            writer.println("Errores semánticos encontrados:");
+            System.err.println("Errores semánticos encontrados:");
+            for (String error : errors) {
+                writer.println(error);
+                System.err.println(error);
+            }
+        } else {
+            writer.println("Análisis semántico completado sin errores.");
+        }
+    }
+
+    /**
+     * Genera un archivo PDF desde un archivo DOT.
+     */
+    private static void generatePDF(String dotFile, boolean debug) {
+        String pdfFile = dotFile.replace(".dot", ".pdf");
+        try {
+            ProcessBuilder pb = new ProcessBuilder("dot", "-Tpdf", dotFile, "-o", pdfFile);
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("PDF generado exitosamente en " + pdfFile);
+            } else {
+                System.err.println("Error generando PDF. Código de salida: " + exitCode);
+            }
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Error generando PDF: " + e.getMessage());
+            if (debug) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Simulación: Optimización del código intermedio.
+     */
+    private static void executeOptimization(String filename, String output, boolean debug) {
+        System.out.println("Etapa de optimización aún no implementada.");
+    }
+
+    /**
+     * Simulación: Generación de código.
+     */
+    private static void executeCodeGen(String filename, String output, boolean debug) {
+        System.out.println("Etapa de generación de código aún no implementada.");
+    }
+
+    /**
+     * Manejo de excepciones de entrada/salida.
+     */
+    private static void handleIOException(IOException e, boolean debug) {
+        System.err.println("Error de E/S: " + e.getMessage());
+        if (debug) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Mensaje de error para argumentos inválidos.
+     */
+    private static void printArgumentError(String argument) {
+        System.err.println("Error: El argumento " + argument + " requiere un valor.");
+        printHelp();
+        System.exit(1);
+    }
+
+    /**
+     * Muestra la ayuda del programa.
+     */
+    private static void printHelp() {
+        System.out.println("Uso: java compiler.Compiler [option] <filename>");
+        System.out.println("-o <outname>: Especifica el nombre del archivo de salida.");
+        System.out.println("-target <stage>: scan, parse, ast, opt, codegen.");
+        System.out.println("-debug: Activa el modo debug.");
+        System.out.println("-h: Muestra esta ayuda.");
     }
 }
