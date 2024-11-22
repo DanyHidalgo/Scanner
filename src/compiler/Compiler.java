@@ -7,6 +7,9 @@ import ast.Program;
 import ast.ASTPrinter;
 import ast.ASTDotGenerator;
 import semantic.SemanticAnalyzer;
+import irt.IRTreeGenerator;
+import irt.BasicBlock;
+import irt.IRResult;
 import java_cup.runtime.Symbol;
 
 import java.io.*;
@@ -71,6 +74,9 @@ public class Compiler {
                     break;
                 case "opt":
                     executeOptimization(filename, output, debug);
+                    break;
+                case "irt":
+                    executeIRT(filename, output, debug); // NUEVO: Etapa de IR
                     break;
                 case "codegen":
                     executeCodeGen(filename, output, debug);
@@ -198,36 +204,6 @@ public class Compiler {
         System.out.println("Parsing completado. Resultados en " + output);
     }
 
-    /**
-     * Ejecuta la generación del AST.
-     */
-
-    /*
-     * private static void executeAST(String filename, String output, boolean debug)
-     * throws IOException, Exception {
-     * Scanner scanner = new Scanner(new FileReader(filename));
-     * Parser parser = new Parser(scanner);
-     * Symbol result = parser.parse();
-     * 
-     * if (result == null || !(result.value instanceof Program)) {
-     * System.err.println("Error: No se pudo generar el AST.");
-     * return;
-     * }
-     * 
-     * Program program = (Program) result.value;
-     * 
-     * try (PrintWriter dotWriter = new PrintWriter(new FileWriter(output))) {
-     * ASTDotGenerator dotGenerator = new ASTDotGenerator(dotWriter);
-     * dotGenerator.beginGraph();
-     * program.accept(dotGenerator);
-     * dotGenerator.endGraph();
-     * }
-     * 
-     * System.out.println("Archivo DOT generado en " + output);
-     * generatePDF(output, debug);
-     * }
-     */
-
     private static void executeAST(String filename, String output, boolean debug) throws IOException {
         // Validar que el archivo de entrada exista y sea legible
         File inputFile = new File(filename);
@@ -317,6 +293,88 @@ public class Compiler {
     }
 
     /**
+    * Generación de código IRT
+    **/
+
+    private static void executeIRT(String filename, String output, boolean debug) throws IOException {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(output))) {
+            writer.println("stage: IRT generation");
+            System.out.println("stage: IRT generation");
+
+            // Inicializar Scanner y Parser
+            Scanner scanner = new Scanner(new FileReader(filename));
+            Parser parser = new Parser(scanner);
+
+            // Realizar el análisis sintáctico
+            Symbol result = parser.parse();
+            if (result == null || result.value == null) {
+                writer.println("Error: No se pudo generar el AST.");
+                return;
+            }
+
+            // Obtener el AST
+            Program program = (Program) result.value;
+
+            // Análisis semántico
+            SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();
+            program.accept(semanticAnalyzer);
+
+            List<String> semanticErrors = semanticAnalyzer.getErrors();
+            if (!semanticErrors.isEmpty()) {
+                writer.println("Errores semánticos encontrados:");
+                for (String error : semanticErrors) {
+                    writer.println(error);
+                }
+                return;
+            }
+
+            // Generar representación intermedia (IR)
+            IRTreeGenerator irGenerator = new IRTreeGenerator();
+            IRResult irResult = irGenerator.generateAndOptimize(program);
+
+            if (irResult.errors.isEmpty()) {
+                writer.println("\nGenerated Intermediate Representation:");
+                if (irResult.ir != null) {
+                    writer.println(irResult.ir.toString());
+                } else {
+                    writer.println("Error: La IR generada es nula.");
+                }
+
+                // Mostrar optimizaciones realizadas
+                writer.println("\nOptimizations performed:");
+                if (irResult.cfg != null && irResult.cfg.blocks != null) {
+                    writer.println("- Número de bloques básicos: " + irResult.cfg.blocks.size());
+                } else {
+                    writer.println("- No se generó el CFG o no tiene bloques básicos.");
+                }
+
+                if (debug) {
+                    writer.println("\nDebug Information:");
+                    writer.println("- Basic blocks and their connections");
+                    if (irResult.cfg != null) {
+                        for (BasicBlock block : irResult.cfg.blocks) {
+                            writer.println("  Block: " + block.label);
+                            writer.println("  Predecessors: " + block.predecesores.size());
+                            writer.println("  Successors: " + block.sucesores.size());
+                            writer.println();
+                        }
+                    }
+                }
+            } else {
+                writer.println("Errores durante la generación de IR:");
+                for (String error : irResult.errors) {
+                    writer.println(error);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error durante la generación de IR: " + e.getMessage());
+            if (debug) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * Simulación: Optimización del código intermedio.
      */
     private static void executeOptimization(String filename, String output, boolean debug) {
@@ -355,7 +413,7 @@ public class Compiler {
     private static void printHelp() {
         System.out.println("Uso: java compiler.Compiler [option] <filename>");
         System.out.println("-o <outname>: Especifica el nombre del archivo de salida.");
-        System.out.println("-target <stage>: scan, parse, ast, opt, codegen.");
+        System.out.println("-target <stage>: scan, parse, ast, irt, codegen");
         System.out.println("-debug: Activa el modo debug.");
         System.out.println("-h: Muestra esta ayuda.");
     }

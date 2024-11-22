@@ -1,4 +1,3 @@
-// En compiler/ast/ContinueStmt.java
 package ast;
 
 public class ContinueStmt extends Statement {

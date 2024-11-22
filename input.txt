@@ -1,5 +1,5 @@
 class Program {
-    /* Variables globales */
+    /* Declaración de variables principales */
     int x;
     int y;
     boolean flag;
@@ -7,29 +7,29 @@ class Program {
     boolean flags[];
     
     void main() {
-        /* Inicialización de variables */
+        /* Asignación inicial de valores */
         x = 10;
         y = 20;
         flag = true;
         
-        /* Arrays */
+        /* Inicialización de arreglos */
         numbers = new int[5];
         flags = new boolean[3];
         
-        /* Operaciones aritméticas correctas */
+        /* Cálculos matemáticos */
         x = y + 1;
         y = x * 2;
         
-        /* Operaciones lógicas correctas */
+        /* Operaciones con valores booleanos */
         flag = true && false;
         flag = !flag;
         
-        /* Operaciones de arrays */
+        /* Manipulación de arreglos */
         numbers[0] = 1;
         numbers[x - 10] = 2;
         flags[0] = true;
         
-        /* Condiciones correctas */
+        /* Evaluaciones de condiciones */
         if (flag) {
             x = 1;
         }
@@ -42,24 +42,24 @@ class Program {
             y = 2;
         }
         
-        /* Loops correctos */
+        /* Iteraciones */
         for (int i = 0; i < 5; i = i + 1) {
             numbers[i] = i * 2;
             if (i == 3) {
-                break; // This break statement is correctly inside the loop
+                break; // Declaración break válida dentro del bucle
             }
             if (i < 2) {
-                continue; // This continue statement is also correctly inside the loop
+                continue; // Declaración continue válida dentro del bucle
             }
             flags[0] = true;
         }
         
-        /* Llamadas a métodos */
+        /* Invocaciones de funciones */
         calculateSum(10);
         performOperations(x, flag);
         flag = checkCondition(x, y);
         
-        return;  /* Correcto para método void */
+        return;  // Retorno adecuado para un método void
     }
     
     int calculateSum(int limit) {
@@ -70,7 +70,7 @@ class Program {
             sum = sum + i;
         }
         
-        return sum;  /* Retorno correcto de int */
+        return sum;  // Valor entero devuelto correctamente
     }
     
     void performOperations(int value, boolean condition) {
@@ -78,7 +78,7 @@ class Program {
             value = value * 2;
         }
         
-        return;  /* Retorno correcto para void */
+        return;  // Retorno adecuado para un método void
     }
     
     boolean checkCondition(int a, int b) {
@@ -90,13 +90,13 @@ class Program {
             result = false;
         }
         
-        return result;  /* Retorno correcto de boolean */
+        return result;  // Valor booleano devuelto correctamente
     }
     
     int factorial(int n) {
         if (n <= 1) {
             return 1;
         }
-        return n * factorial(n - 1);  /* Llamada recursiva correcta */
+        return n * factorial(n - 1);  // Llamada recursiva válida
     }
 }
